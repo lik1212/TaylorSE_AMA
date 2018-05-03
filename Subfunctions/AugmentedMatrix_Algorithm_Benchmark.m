@@ -1,4 +1,4 @@
-function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(NodeRes_file,BranchRes_file,pseudo,LP_DB_filename,PV_DB_filename,LP_dist_name,PV_dist_name,SinName)
+function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(NodeRes_file,BranchRes_file,pseudo,LP_DB_filename,PV_DB_filename,LP_dist_name,PV_dist_name,SinName,Grid_Path)
 % function AugmentedMatrix_Algorithm_Benchmark(Memory_Path, Sigma_Power, End_TimeStep)
 %%  CheapFlex_LFCvsTaylor_main
 %{
@@ -9,17 +9,10 @@ function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = 
                    1. ...
 
         Supervisor:     Robert Brandalik
-        Author(s):      Robert Brandalik, Jiali Tu, Daniel Henschel
+        Author(s):      Robert Brandalik, Jiali Tu, Daniel Henschel etc...
 %}
 
 %% Clear start
-
-% fclose('all');                      % Close all open files
-% close;                              % Close and delete the current figure
-% clear                               % Clear all variables
-% clearvars -except NodeRes_all r____meas_bench;      % Clear all Variables except of NodeRes_all
-% clc;                                % Clear command window
-% tic;
 
 fprintf('AugmentedMatrix_Algorithm\n\n');   % Command window output
 
@@ -35,19 +28,7 @@ sigma_phi_Pseu  = NaN;
 sigma___P_Pseu  = 50;                 % Watt
 sigma___Q_Pseu  = 50;                 % Var
 start_TimeStep  = 1;
-% end___TimeStep  = 200;
-end___TimeStep  = 1440; %24*60;
-% pseudo = false;
-
-%% Path and directory preparation
-
-% addpath(           [pwd,'\Subfunctions' ]);  % Add subfunction path
-% addpath(           [pwd,'\Static_Input\']);  % Add static input path
-% LP_Path          = [cd,'\LFC_Results\' ];   % Get Load Flow calculation results path
-% LP_Path          = 'Z:\Gassler\2_Sim\Lastfluss\Ergebnisse LFR Scada\';
-SincalModel.Path = [pwd,'\Sincal_Grids\'];   % Get Sincal Grids path
-% NodeRes_all_Name = 'NodeRes_all.mat';
-% NodeRes_all_Name = 'Wessum-Riete_Netz_170726_NodeRes_raw.mat';
+end___TimeStep  = 1440;
 
 %% Load the load profiles (TODO)
 
@@ -75,14 +56,9 @@ NodeRes_all_exakt = NodeRes_all;
 %% Load Information of Sincal model
 
 fprintf('Main-Function: 2) Load Sincal Model\n');       % Command window output
-% try
-%     fprintf('Saved SincalModel Info will be loaded!\n'); % and saved as SincalModel.Info\n');
-%     load([SincalModel.Path(1:end-13),'Static_Input\','SincalModel_.mat']);
-% catch
-    SincalModel.Name = SinName;    % Get sincal model Name
-    SincalModel.Info = ...
-        Mat2Sin_GetSinInfo(SincalModel.Name,SincalModel.Path);
-% end
+SincalModel.Name = SinName;    % Get sincal model Name
+SincalModel.Info = ...
+    Mat2Sin_GetSinInfo(SincalModel.Name,Grid_Path);
 
 %% Swap or insert Pseudo values for load profiles
 
@@ -189,7 +165,7 @@ fprintf('Main-Function: 2c) calculate the Y_012 and Y_L1L2L3 admittance matrix\n
 %     load([cd,'\Static_Input\','Y_Info.mat'])
 % else
     [Y_012, Y_012_NodeNames]    = ...                               % Get admittance matrix Y_012 (symmetrical components)
-        Mat2Sin_GetY_012_withC(SincalModel.Name,SincalModel.Path);
+        Mat2Sin_GetY_012_withC(SincalModel.Name,Grid_Path);
     Y_L1L2L3                    = Y_012_to_Y_L1L2L3(Y_012);         % Transform admittance matrix from symmetrical componenetns to Y_L1L2L3
 %     save([cd,'\Static_Input\','Y_Info.mat'],...                     % Save admittance matrix Y_L1L2L3
 %         'Y_012','Y_012_NodeNames','Y_L1L2L3');
