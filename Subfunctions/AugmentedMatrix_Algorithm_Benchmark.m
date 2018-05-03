@@ -1,4 +1,4 @@
-function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(NodeRes_file,BranchRes_file,pseudo,LP_DB_filename,PV_DB_filename,LP_dist_name,PV_dist_name,SinName,Grid_Path)
+function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(Inputs)
 % function AugmentedMatrix_Algorithm_Benchmark(Memory_Path, Sigma_Power, End_TimeStep)
 %%  CheapFlex_LFCvsTaylor_main
 %{
@@ -14,6 +14,9 @@ function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = 
 
 %% Clear start
 
+NodeRes_Name = Inputs.NodeRes_Name;
+pseudo =Inputs.pseudo;
+BranchRes_Name = Inputs.BranchRes_Name;
 fprintf('AugmentedMatrix_Algorithm\n\n');   % Command window output
 
 %% Configurations
@@ -36,9 +39,9 @@ fprintf('Main-Function: 1) Load Profiles\n');   % Command window output
 if  exist('NodeRes_all', 'var')                 % Check if file "NodeRes_all.mat" exists
     % if 'NodeRes_all' exists in workspace, there is no need to load it
 % elseif  exist([LP_Path,NodeRes_all_Name],'file')
-elseif  exist(NodeRes_file,'file')
-    load(NodeRes_file);
-    disp([NodeRes_file,' sucessfully loaded.']);
+elseif  exist(NodeRes_Name,'file')
+    load(NodeRes_Name);
+    disp([NodeRes_Name,' sucessfully loaded.']);
     NodeRes_all = sortrows(NodeRes_all,'Node_ID','ascend');
     NodeRes_all = sortrows(NodeRes_all,'ResTime','ascend');
 else
@@ -56,9 +59,9 @@ NodeRes_all_exakt = NodeRes_all;
 %% Load Information of Sincal model
 
 fprintf('Main-Function: 2) Load Sincal Model\n');       % Command window output
-SincalModel.Name = SinName;    % Get sincal model Name
+SincalModel.Name = Inputs.Grid_Name;    % Get sincal model Name
 SincalModel.Info = ...
-    Mat2Sin_GetSinInfo(SincalModel.Name,Grid_Path);
+    Mat2Sin_GetSinInfo(SincalModel.Name,Inputs.Grid_Path);
 
 %% Swap or insert Pseudo values for load profiles
 
@@ -66,8 +69,8 @@ fprintf('Main-Function: 2a) Swap P Q measured values with pseudo values\n');   %
 % load('Z:\Gassler\5_SYNTH_Data\Load_Profiles\DB111_10min_synth.mat');
 if pseudo
 %     NodeRes_all_backup = NodeRes_all;
-    load(LP_DB_filename);   % TODO: Besser Funktion-Übergabe 
-    load(PV_DB_filename);   % TODO: Besser Funktion-Übergabe 
+    load(LP_DB_name);   % TODO: Besser Funktion-Übergabe 
+    load(PV_DB_name);   % TODO: Besser Funktion-Übergabe 
     NodeRes_all = insert_LP_PseudoValues(NodeRes_all,SincalModel.Info,Load_Profiles,'list',LP_dist_name);
     NodeRes_all = insert_PV_PseudoValues(NodeRes_all,SincalModel.Info,PV___Profiles,'list',PV_dist_name);
     NodeRes_Path = [pwd,'\LFC_Results\']; clear Load_Profiles PV___Profiles
@@ -102,7 +105,7 @@ end
 
 %% Trafo raus
 
-load(BranchRes_file);
+load(BranchRes_Name);
 Branch_VN = BranchRes_all.Properties.VariableNames;
 BranchRes_all = varfun(@double, BranchRes_all);
 BranchRes_all.Properties.VariableNames = Branch_VN;
@@ -165,7 +168,7 @@ fprintf('Main-Function: 2c) calculate the Y_012 and Y_L1L2L3 admittance matrix\n
 %     load([cd,'\Static_Input\','Y_Info.mat'])
 % else
     [Y_012, Y_012_NodeNames]    = ...                               % Get admittance matrix Y_012 (symmetrical components)
-        Mat2Sin_GetY_012_withC(SincalModel.Name,Grid_Path);
+        Mat2Sin_GetY_012_withC(SincalModel.Name,Inputs.Grid_Path);
     Y_L1L2L3                    = Y_012_to_Y_L1L2L3(Y_012);         % Transform admittance matrix from symmetrical componenetns to Y_L1L2L3
 %     save([cd,'\Static_Input\','Y_Info.mat'],...                     % Save admittance matrix Y_L1L2L3
 %         'Y_012','Y_012_NodeNames','Y_L1L2L3');
