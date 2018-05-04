@@ -1,26 +1,38 @@
 function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(Inputs)
-% function AugmentedMatrix_Algorithm_Benchmark(Memory_Path, Sigma_Power, End_TimeStep)
-%%  CheapFlex_LFCvsTaylor_main
-%{
-        CheapFlex_LFCvsTaylor - Taylor State Estimation with Augmented
-        Matrix Aproach, main try
+%% AugmentedMatrix_Algorithm_Benchmark
+% 
+% AugmentedMatrix_Algorithm_Benchmark - TODO
+% 
+% Flowchart:
+%               1. ...
+% 
+%
+% Author(s):    R. Brandalik
+%               J. Tu
+%               D. Henschel
+%               P. Gassler
+%
+% Contact: brandalikrobert@gmail.com, brandalik@eit.uni-kl.de
+%
+% Special thanks go to the entire TUK ESEM team.
+%
+% Parts of the work were the result of the projects SmartSCADA and
+% CheapFlex, sponsored by the German Federal Ministry of Economic Affairs
+% and Energy as part of the 6th Energy Research Programme of the German
+% Federal Government.
 
-        Flowchart:
-                   1. ...
+%% Check Settings
 
-        Supervisor:     Robert Brandalik
-        Author(s):      Robert Brandalik, Jiali Tu, Daniel Henschel etc...
-%}
+Settings = defaultSettings(Inputs); % For future they will be some default Settings.
 
-%% Clear start
+NodeRes_PathName   = [Settings.LF_Res_Path, Settings.NodeRes_Name   ];
+BranchRes_PathName = [Settings.LF_Res_Path, Settings .BranchRes_Name];
 
-NodeRes_Name = Inputs.NodeRes_Name;
-pseudo =Inputs.pseudo;
-BranchRes_Name = Inputs.BranchRes_Name;
-fprintf('AugmentedMatrix_Algorithm\n\n');   % Command window output
+pseudo = Settings.pseudo;
 
 %% Configurations
 
+fprintf('AugmentedMatrix_Algorithm\n\n');   % Command window output
 U_eva           = 1 * 400/sqrt(3); % Set voltage amount of evaluation (eva) point of linearization
 sigma___U_Meas  = 0.1;                % Set standard deviation of voltage (in V) and power measurements (in W respectively var), Meas - Measured
 sigma_phi_Meas  = 0.01;
@@ -36,21 +48,11 @@ end___TimeStep  = 1440;
 %% Load the load profiles (TODO)
 
 fprintf('Main-Function: 1) Load Profiles\n');   % Command window output
-if  exist('NodeRes_all', 'var')                 % Check if file "NodeRes_all.mat" exists
-    % if 'NodeRes_all' exists in workspace, there is no need to load it
-% elseif  exist([LP_Path,NodeRes_all_Name],'file')
-elseif  exist(NodeRes_Name,'file')
-    load(NodeRes_Name);
-    disp([NodeRes_Name,' sucessfully loaded.']);
-    NodeRes_all = sortrows(NodeRes_all,'Node_ID','ascend');
-    NodeRes_all = sortrows(NodeRes_all,'ResTime','ascend');
-else
-    inst = 5256; % TODO, anpassen
-    NodeRes_all = loadLFC_Results(LP_Path,inst);
-    NodeRes_all = sortrows(NodeRes_all,'Node_ID','ascend');
-    NodeRes_all = sortrows(NodeRes_all,'ResTime','ascend');
-    save([LP_Path,'NodeRes_all.mat'],'NodeRes_all');
-end
+
+load(NodeRes_PathName,'NodeRes_all');
+disp([NodeRes_PathName,' sucessfully loaded.']);
+NodeRes_all = sortrows(NodeRes_all,'Node_ID','ascend'); %#ok -> was load
+NodeRes_all = sortrows(NodeRes_all,'ResTime','ascend');
 
 %% Save exakt
 
@@ -59,20 +61,19 @@ NodeRes_all_exakt = NodeRes_all;
 %% Load Information of Sincal model
 
 fprintf('Main-Function: 2) Load Sincal Model\n');       % Command window output
-SincalModel.Name = Inputs.Grid_Name;    % Get sincal model Name
+SincalModel.Name = Settings .Grid_Name;    % Get sincal model Name
 SincalModel.Info = ...
-    Mat2Sin_GetSinInfo(SincalModel.Name,Inputs.Grid_Path);
+    Mat2Sin_GetSinInfo(SincalModel.Name,Settings .Grid_Path);
 
 %% Swap or insert Pseudo values for load profiles
 
 fprintf('Main-Function: 2a) Swap P Q measured values with pseudo values\n');   % Command window output
-% load('Z:\Gassler\5_SYNTH_Data\Load_Profiles\DB111_10min_synth.mat');
 if pseudo
 %     NodeRes_all_backup = NodeRes_all;
-    load(LP_DB_name);   % TODO: Besser Funktion-Übergabe 
-    load(PV_DB_name);   % TODO: Besser Funktion-Übergabe 
-    NodeRes_all = insert_LP_PseudoValues(NodeRes_all,SincalModel.Info,Load_Profiles,'list',LP_dist_name);
-    NodeRes_all = insert_PV_PseudoValues(NodeRes_all,SincalModel.Info,PV___Profiles,'list',PV_dist_name);
+    load(LP_DB_name, 'LP_DB_name');   % TODO: Besser Funktion-Übergabe 
+    load(PV_DB_name, 'PV_DB_name');   % TODO: Besser Funktion-Übergabe 
+    NodeRes_all = insert_LP_PseudoValues(NodeRes_all,SincalModel.Info,Load_Profiles, 'list', LP_dist_name);
+    NodeRes_all = insert_PV_PseudoValues(NodeRes_all,SincalModel.Info,PV___Profiles, 'list', PV_dist_name);
     NodeRes_Path = [pwd,'\LFC_Results\']; clear Load_Profiles PV___Profiles
     save([NodeRes_Path,'NodeRes_Pseudo.mat'],'NodeRes_all');
 %     clear 'NodeRes_all_backup'
@@ -105,8 +106,8 @@ end
 
 %% Trafo raus
 
-load(BranchRes_Name);
-Branch_VN = BranchRes_all.Properties.VariableNames;
+load(BranchRes_PathName,'BranchRes_all');
+Branch_VN = BranchRes_all.Properties.VariableNames; %#ok -> was load
 BranchRes_all = varfun(@double, BranchRes_all);
 BranchRes_all.Properties.VariableNames = Branch_VN;
 
@@ -160,247 +161,242 @@ NodeRes_all_exakt{NodeRes_all_exakt.Node_ID == NodeID_Infeeder,:} = ...
 TerminalID_TR(NodeID_TR == Node_ID_Infeeder);
 SincalModel.Info.Terminal(ismember(SincalModel.Info.Terminal.Terminal_ID,[TerminalID_TR(NodeID_TR == Node_ID_Infeeder), TerminalID_Infeeder]),:) = [];
 
-
 %% Load or calculate admittance matrix Y_012 and Y_L1L2L3
 
 fprintf('Main-Function: 2c) calculate the Y_012 and Y_L1L2L3 admittance matrix\n'); 
-% if  exist([cd,'\Static_Input\','Y_Info.mat'],'file')
-%     load([cd,'\Static_Input\','Y_Info.mat'])
+
+[Y_012, Y_012_NodeNames]    = ...                               % Get admittance matrix Y_012 (symmetrical components)
+    Mat2Sin_GetY_012_withC(SincalModel.Name,Settings .Grid_Path);
+Y_L1L2L3                    = Y_012_to_Y_L1L2L3(Y_012);         % Transform admittance matrix from symmetrical componenetns to Y_L1L2L3
+
+
+% %% Node seperation
+% 
+% All______Node_ID  = unique(SincalModel.Info.Node.      Node_ID );
+% Infeeder_Node_ID  = unique(SincalModel.Info.Infeeder.  Node1_ID);
+% PV_______Node_ID  = unique(SincalModel.Info.DCInfeeder.Node1_ID);
+% Load_____Node_ID  = unique(SincalModel.Info.Load.      Node1_ID);
+% 
+% Infeeder_Node_pos = ismember(SincalModel.Info.Node.Node_ID,Infeeder_Node_ID);
+% PV_______Node_pos = ismember(SincalModel.Info.Node.Node_ID,PV_______Node_ID);
+% Load_____Node_pos = ismember(SincalModel.Info.Node.Node_ID,Load_____Node_ID);
+% All______Node_pos = ismember(SincalModel.Info.Node.Node_ID,All______Node_ID);
+% 
+% %% Measured Node Positions
+% 
+% Measured_Node_U1___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
+% Measured_Node_U2___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
+% Measured_Node_U3___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
+% 
+% Measured_Node_phi1_pos = ~ All______Node_pos;
+% Measured_Node_phi2_pos = ~ All______Node_pos;
+% Measured_Node_phi3_pos = ~ All______Node_pos;
+% 
+% if ~pseudo
+%     Measured_Node_P1___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
+%     Measured_Node_P2___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
+%     Measured_Node_P3___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
+% 
+%     Measured_Node_Q1___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
+%     Measured_Node_Q2___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
+%     Measured_Node_Q3___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
 % else
-    [Y_012, Y_012_NodeNames]    = ...                               % Get admittance matrix Y_012 (symmetrical components)
-        Mat2Sin_GetY_012_withC(SincalModel.Name,Inputs.Grid_Path);
-    Y_L1L2L3                    = Y_012_to_Y_L1L2L3(Y_012);         % Transform admittance matrix from symmetrical componenetns to Y_L1L2L3
-%     save([cd,'\Static_Input\','Y_Info.mat'],...                     % Save admittance matrix Y_L1L2L3
-%         'Y_012','Y_012_NodeNames','Y_L1L2L3');
+%     % With pseudo values (synthtic load profiles)
+%     Measured_Node_P1___pos =   Infeeder_Node_pos;
+%     Measured_Node_P2___pos =   Infeeder_Node_pos;
+%     Measured_Node_P3___pos =   Infeeder_Node_pos;
+% 
+%     Measured_Node_Q1___pos =   Infeeder_Node_pos;
+%     Measured_Node_Q2___pos =   Infeeder_Node_pos;
+%     Measured_Node_Q3___pos =   Infeeder_Node_pos;
 % end
-
-%% Node seperation
-
-All______Node_ID  = unique(SincalModel.Info.Node.      Node_ID );
-Infeeder_Node_ID  = unique(SincalModel.Info.Infeeder.  Node1_ID);
-PV_______Node_ID  = unique(SincalModel.Info.DCInfeeder.Node1_ID);
-Load_____Node_ID  = unique(SincalModel.Info.Load.      Node1_ID);
-
-Infeeder_Node_pos = ismember(SincalModel.Info.Node.Node_ID,Infeeder_Node_ID);
-PV_______Node_pos = ismember(SincalModel.Info.Node.Node_ID,PV_______Node_ID);
-Load_____Node_pos = ismember(SincalModel.Info.Node.Node_ID,Load_____Node_ID);
-All______Node_pos = ismember(SincalModel.Info.Node.Node_ID,All______Node_ID);
-
-%% Measured Node Positions
-
-Measured_Node_U1___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-Measured_Node_U2___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-Measured_Node_U3___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-
-Measured_Node_phi1_pos = ~ All______Node_pos;
-Measured_Node_phi2_pos = ~ All______Node_pos;
-Measured_Node_phi3_pos = ~ All______Node_pos;
-
-if ~pseudo
-    Measured_Node_P1___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-    Measured_Node_P2___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-    Measured_Node_P3___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-
-    Measured_Node_Q1___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-    Measured_Node_Q2___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-    Measured_Node_Q3___pos =   Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos;
-else
-    % With pseudo values (synthtic load profiles)
-    Measured_Node_P1___pos =   Infeeder_Node_pos;
-    Measured_Node_P2___pos =   Infeeder_Node_pos;
-    Measured_Node_P3___pos =   Infeeder_Node_pos;
-
-    Measured_Node_Q1___pos =   Infeeder_Node_pos;
-    Measured_Node_Q2___pos =   Infeeder_Node_pos;
-    Measured_Node_Q3___pos =   Infeeder_Node_pos;
-end
-
-%% Virtual Node Positions
-
-Virtual__Node_U1___pos = ~ All______Node_pos;
-Virtual__Node_U2___pos = ~ All______Node_pos;
-Virtual__Node_U3___pos = ~ All______Node_pos;
-
-Virtual__Node_phi1_pos =   Infeeder_Node_pos;
-Virtual__Node_phi2_pos =   Infeeder_Node_pos;
-Virtual__Node_phi3_pos =   Infeeder_Node_pos;
-
-if ~pseudo
-    Virtual__Node_P1___pos = ~ Measured_Node_P1___pos;
-    Virtual__Node_P2___pos = ~ Measured_Node_P2___pos;
-    Virtual__Node_P3___pos = ~ Measured_Node_P3___pos;
-
-    Virtual__Node_Q1___pos = ~ Measured_Node_Q1___pos;
-    Virtual__Node_Q2___pos = ~ Measured_Node_Q2___pos;
-    Virtual__Node_Q3___pos = ~ Measured_Node_Q3___pos;
-else
-    % With pseudo values (synthtic load profiles)
-    Virtual__Node_P1___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos); 
-    Virtual__Node_P2___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos); 
-    Virtual__Node_P3___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos); 
-
-    Virtual__Node_Q1___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos);
-    Virtual__Node_Q2___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos); 
-    Virtual__Node_Q3___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos);
-end
-
-%% Pseudo Node Positions
-
-Pseudo___Node_U1___pos = ~ All______Node_pos;
-Pseudo___Node_U2___pos = ~ All______Node_pos;
-Pseudo___Node_U3___pos = ~ All______Node_pos;
-
-Pseudo___Node_phi1_pos = ~ All______Node_pos;
-Pseudo___Node_phi2_pos = ~ All______Node_pos;
-Pseudo___Node_phi3_pos = ~ All______Node_pos;
-
-if ~pseudo
-    Pseudo___Node_P1___pos = ~ All______Node_pos;
-    Pseudo___Node_P2___pos = ~ All______Node_pos;
-    Pseudo___Node_P3___pos = ~ All______Node_pos;
-
-    Pseudo___Node_Q1___pos = ~ All______Node_pos;
-    Pseudo___Node_Q2___pos = ~ All______Node_pos;
-    Pseudo___Node_Q3___pos = ~ All______Node_pos;
-else
-    % With pseudo values (synthtic load profiles)
-    Pseudo___Node_P1___pos = PV_______Node_pos | Load_____Node_pos;
-    Pseudo___Node_P2___pos = PV_______Node_pos | Load_____Node_pos;
-    Pseudo___Node_P3___pos = PV_______Node_pos | Load_____Node_pos;
-
-    Pseudo___Node_Q1___pos = PV_______Node_pos | Load_____Node_pos;
-    Pseudo___Node_Q2___pos = PV_______Node_pos | Load_____Node_pos;
-    Pseudo___Node_Q3___pos = PV_______Node_pos | Load_____Node_pos;
-end
-
-%% TODO: Adjust comments
-
-num_Nodes     = numel(All______Node_pos);	% Get number of grid nodes and number of time step
-num_PNM_Types = 4;                          % PNM - Posible noad measurements; 4 Types: U, phi, P, Q
-num_PMN___max = 3 *num_Nodes;               % Max. posible measurements at nodes (PMN)
-
-%% Real Measurements in measurement vector z
-
-% Initial
-z_meas____pos___U = false(num_PNM_Types * num_PMN___max, 1);
-z_meas____pos_phi = false(num_PNM_Types * num_PMN___max, 1);
-z_meas____pos___P = false(num_PNM_Types * num_PMN___max, 1);
-z_meas____pos___Q = false(num_PNM_Types * num_PMN___max, 1);
-
-z_meas____pos___U(                    1 :     num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Measured_Node_U1___pos';...
-    Measured_Node_U2___pos';...
-    Measured_Node_U3___pos'],[],1);
-
-z_meas____pos_phi(    num_PMN___max + 1 : 2 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Measured_Node_phi1_pos';...
-    Measured_Node_phi2_pos';...
-    Measured_Node_phi3_pos'],[],1);
-
-z_meas____pos___P(2 * num_PMN___max + 1 : 3 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Measured_Node_P1___pos';...
-    Measured_Node_P2___pos';...
-    Measured_Node_P3___pos'],[],1);
-
-z_meas____pos___Q(3 * num_PMN___max + 1 : 4 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Measured_Node_Q1___pos';...
-    Measured_Node_Q2___pos';...
-    Measured_Node_Q3___pos'],[],1);
-
-z_meas____pos_all = ...
-    z_meas____pos___U | ...
-    z_meas____pos_phi | ...
-    z_meas____pos___P | ...
-    z_meas____pos___Q   ...
-    ;
-
-z_meas____num___U = sum(z_meas____pos___U);
-z_meas____num_phi = sum(z_meas____pos_phi);
-z_meas____num___P = sum(z_meas____pos___P);
-z_meas____num___Q = sum(z_meas____pos___Q);
-z_meas____num_all = sum(z_meas____pos_all);  	% Get number of real measurements in z
-
-%% Virtual Measurements in measurement vector z
-
-% Initial
-z_virtual_pos___U = false(num_PNM_Types * num_PMN___max, 1);
-z_virtual_pos_phi = false(num_PNM_Types * num_PMN___max, 1);
-z_virtual_pos___P = false(num_PNM_Types * num_PMN___max, 1);
-z_virtual_pos___Q = false(num_PNM_Types * num_PMN___max, 1);
-
-z_virtual_pos___U(                    1 :     num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Virtual__Node_U1___pos';...
-    Virtual__Node_U2___pos';...
-    Virtual__Node_U3___pos'],[],1);
-
-z_virtual_pos_phi(    num_PMN___max + 1 : 2 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Virtual__Node_phi1_pos';...
-    Virtual__Node_phi2_pos';...
-    Virtual__Node_phi3_pos'],[],1);
-
-z_virtual_pos___P(2 * num_PMN___max + 1 : 3 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Virtual__Node_P1___pos';...
-    Virtual__Node_P2___pos';...
-    Virtual__Node_P3___pos'],[],1);
-
-z_virtual_pos___Q(3 * num_PMN___max + 1 : 4 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Virtual__Node_Q1___pos';...
-    Virtual__Node_Q2___pos';...
-    Virtual__Node_Q3___pos'],[],1);
-
-z_virtual_pos_all = ...
-    z_virtual_pos___U | ...
-    z_virtual_pos_phi | ...
-    z_virtual_pos___P | ...
-    z_virtual_pos___Q   ...
-    ;
-
-z_virtual_num___U = sum(z_virtual_pos___U);
-z_virtual_num_phi = sum(z_virtual_pos_phi);
-z_virtual_num___P = sum(z_virtual_pos___P);
-z_virtual_num___Q = sum(z_virtual_pos___Q);
-z_virtual_num_all = sum(z_virtual_pos_all);   	% Get number of virtual measurements in z
-
-%% Pseudo Measurements in measurement vector z
-
-% Initial
-z_pseudo__pos___U = false(num_PNM_Types * num_PMN___max, 1);
-z_pseudo__pos_phi = false(num_PNM_Types * num_PMN___max, 1);
-z_pseudo__pos___P = false(num_PNM_Types * num_PMN___max, 1);
-z_pseudo__pos___Q = false(num_PNM_Types * num_PMN___max, 1);
-
-z_pseudo__pos___U(                    1 :     num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Pseudo___Node_U1___pos';...
-    Pseudo___Node_U2___pos';...
-    Pseudo___Node_U3___pos'],[],1);
-
-z_pseudo__pos_phi(    num_PMN___max + 1 : 2 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Pseudo___Node_phi1_pos';...
-    Pseudo___Node_phi2_pos';...
-    Pseudo___Node_phi3_pos'],[],1);
-
-z_pseudo__pos___P(2 * num_PMN___max + 1 : 3 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Pseudo___Node_P1___pos';...
-    Pseudo___Node_P2___pos';...
-    Pseudo___Node_P3___pos'],[],1);
-
-z_pseudo__pos___Q(3 * num_PMN___max + 1 : 4 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
-    Pseudo___Node_Q1___pos';...
-    Pseudo___Node_Q2___pos';...
-    Pseudo___Node_Q3___pos'],[],1);
-
-z_pseudo__pos_all = ...
-    z_pseudo__pos___U | ...
-    z_pseudo__pos_phi | ...
-    z_pseudo__pos___P | ...
-    z_pseudo__pos___Q   ...
-    ;
-
-z_pseudo__num___U = sum(z_pseudo__pos___U);
-z_pseudo__num_phi = sum(z_pseudo__pos_phi);
-z_pseudo__num___P = sum(z_pseudo__pos___P);
-z_pseudo__num___Q = sum(z_pseudo__pos___Q);
-z_pseudo__num_all = sum(z_pseudo__pos_all);   	% Get number of pseudo measurements in z
+% 
+% %% Virtual Node Positions
+% 
+% Virtual__Node_U1___pos = ~ All______Node_pos;
+% Virtual__Node_U2___pos = ~ All______Node_pos;
+% Virtual__Node_U3___pos = ~ All______Node_pos;
+% 
+% Virtual__Node_phi1_pos =   Infeeder_Node_pos;
+% Virtual__Node_phi2_pos =   Infeeder_Node_pos;
+% Virtual__Node_phi3_pos =   Infeeder_Node_pos;
+% 
+% if ~pseudo
+%     Virtual__Node_P1___pos = ~ Measured_Node_P1___pos;
+%     Virtual__Node_P2___pos = ~ Measured_Node_P2___pos;
+%     Virtual__Node_P3___pos = ~ Measured_Node_P3___pos;
+% 
+%     Virtual__Node_Q1___pos = ~ Measured_Node_Q1___pos;
+%     Virtual__Node_Q2___pos = ~ Measured_Node_Q2___pos;
+%     Virtual__Node_Q3___pos = ~ Measured_Node_Q3___pos;
+% else
+%     % With pseudo values (synthtic load profiles)
+%     Virtual__Node_P1___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos); 
+%     Virtual__Node_P2___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos); 
+%     Virtual__Node_P3___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos); 
+% 
+%     Virtual__Node_Q1___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos);
+%     Virtual__Node_Q2___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos); 
+%     Virtual__Node_Q3___pos = ~ (Infeeder_Node_pos | PV_______Node_pos | Load_____Node_pos);
+% end
+% 
+% %% Pseudo Node Positions
+% 
+% Pseudo___Node_U1___pos = ~ All______Node_pos;
+% Pseudo___Node_U2___pos = ~ All______Node_pos;
+% Pseudo___Node_U3___pos = ~ All______Node_pos;
+% 
+% Pseudo___Node_phi1_pos = ~ All______Node_pos;
+% Pseudo___Node_phi2_pos = ~ All______Node_pos;
+% Pseudo___Node_phi3_pos = ~ All______Node_pos;
+% 
+% if ~pseudo
+%     Pseudo___Node_P1___pos = ~ All______Node_pos;
+%     Pseudo___Node_P2___pos = ~ All______Node_pos;
+%     Pseudo___Node_P3___pos = ~ All______Node_pos;
+% 
+%     Pseudo___Node_Q1___pos = ~ All______Node_pos;
+%     Pseudo___Node_Q2___pos = ~ All______Node_pos;
+%     Pseudo___Node_Q3___pos = ~ All______Node_pos;
+% else
+%     % With pseudo values (synthtic load profiles)
+%     Pseudo___Node_P1___pos = PV_______Node_pos | Load_____Node_pos;
+%     Pseudo___Node_P2___pos = PV_______Node_pos | Load_____Node_pos;
+%     Pseudo___Node_P3___pos = PV_______Node_pos | Load_____Node_pos;
+% 
+%     Pseudo___Node_Q1___pos = PV_______Node_pos | Load_____Node_pos;
+%     Pseudo___Node_Q2___pos = PV_______Node_pos | Load_____Node_pos;
+%     Pseudo___Node_Q3___pos = PV_______Node_pos | Load_____Node_pos;
+% end
+% 
+% %% TODO: Adjust comments
+% 
+% num_Nodes     = numel(All______Node_pos);	% Get number of grid nodes and number of time step
+% num_PNM_Types = 4;                          % PNM - Posible noad measurements; 4 Types: U, phi, P, Q
+% num_PMN___max = 3 *num_Nodes;               % Max. posible measurements at nodes (PMN)
+% 
+% %% Real Measurements in measurement vector z
+% 
+% % Initial
+% z_meas____pos___U = false(num_PNM_Types * num_PMN___max, 1);
+% z_meas____pos_phi = false(num_PNM_Types * num_PMN___max, 1);
+% z_meas____pos___P = false(num_PNM_Types * num_PMN___max, 1);
+% z_meas____pos___Q = false(num_PNM_Types * num_PMN___max, 1);
+% 
+% z_meas____pos___U(                    1 :     num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Measured_Node_U1___pos';...
+%     Measured_Node_U2___pos';...
+%     Measured_Node_U3___pos'],[],1);
+% 
+% z_meas____pos_phi(    num_PMN___max + 1 : 2 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Measured_Node_phi1_pos';...
+%     Measured_Node_phi2_pos';...
+%     Measured_Node_phi3_pos'],[],1);
+% 
+% z_meas____pos___P(2 * num_PMN___max + 1 : 3 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Measured_Node_P1___pos';...
+%     Measured_Node_P2___pos';...
+%     Measured_Node_P3___pos'],[],1);
+% 
+% z_meas____pos___Q(3 * num_PMN___max + 1 : 4 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Measured_Node_Q1___pos';...
+%     Measured_Node_Q2___pos';...
+%     Measured_Node_Q3___pos'],[],1);
+% 
+% z_meas____pos_all = ...
+%     z_meas____pos___U | ...
+%     z_meas____pos_phi | ...
+%     z_meas____pos___P | ...
+%     z_meas____pos___Q   ...
+%     ;
+% 
+% z_meas____num___U = sum(z_meas____pos___U);
+% z_meas____num_phi = sum(z_meas____pos_phi);
+% z_meas____num___P = sum(z_meas____pos___P);
+% z_meas____num___Q = sum(z_meas____pos___Q);
+% z_meas____num_all = sum(z_meas____pos_all);  	% Get number of real measurements in z
+% 
+% %% Virtual Measurements in measurement vector z
+% 
+% % Initial
+% z_virtual_pos___U = false(num_PNM_Types * num_PMN___max, 1);
+% z_virtual_pos_phi = false(num_PNM_Types * num_PMN___max, 1);
+% z_virtual_pos___P = false(num_PNM_Types * num_PMN___max, 1);
+% z_virtual_pos___Q = false(num_PNM_Types * num_PMN___max, 1);
+% 
+% z_virtual_pos___U(                    1 :     num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Virtual__Node_U1___pos';...
+%     Virtual__Node_U2___pos';...
+%     Virtual__Node_U3___pos'],[],1);
+% 
+% z_virtual_pos_phi(    num_PMN___max + 1 : 2 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Virtual__Node_phi1_pos';...
+%     Virtual__Node_phi2_pos';...
+%     Virtual__Node_phi3_pos'],[],1);
+% 
+% z_virtual_pos___P(2 * num_PMN___max + 1 : 3 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Virtual__Node_P1___pos';...
+%     Virtual__Node_P2___pos';...
+%     Virtual__Node_P3___pos'],[],1);
+% 
+% z_virtual_pos___Q(3 * num_PMN___max + 1 : 4 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Virtual__Node_Q1___pos';...
+%     Virtual__Node_Q2___pos';...
+%     Virtual__Node_Q3___pos'],[],1);
+% 
+% z_virtual_pos_all = ...
+%     z_virtual_pos___U | ...
+%     z_virtual_pos_phi | ...
+%     z_virtual_pos___P | ...
+%     z_virtual_pos___Q   ...
+%     ;
+% 
+% % z_virtual_num___U = sum(z_virtual_pos___U);
+% % z_virtual_num_phi = sum(z_virtual_pos_phi);
+% % z_virtual_num___P = sum(z_virtual_pos___P);
+% % z_virtual_num___Q = sum(z_virtual_pos___Q);
+% z_virtual_num_all = sum(z_virtual_pos_all);   	% Get number of virtual measurements in z
+% 
+% %% Pseudo Measurements in measurement vector z
+% 
+% % Initial
+% z_pseudo__pos___U = false(num_PNM_Types * num_PMN___max, 1);
+% z_pseudo__pos_phi = false(num_PNM_Types * num_PMN___max, 1);
+% z_pseudo__pos___P = false(num_PNM_Types * num_PMN___max, 1);
+% z_pseudo__pos___Q = false(num_PNM_Types * num_PMN___max, 1);
+% 
+% z_pseudo__pos___U(                    1 :     num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Pseudo___Node_U1___pos';...
+%     Pseudo___Node_U2___pos';...
+%     Pseudo___Node_U3___pos'],[],1);
+% 
+% z_pseudo__pos_phi(    num_PMN___max + 1 : 2 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Pseudo___Node_phi1_pos';...
+%     Pseudo___Node_phi2_pos';...
+%     Pseudo___Node_phi3_pos'],[],1);
+% 
+% z_pseudo__pos___P(2 * num_PMN___max + 1 : 3 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Pseudo___Node_P1___pos';...
+%     Pseudo___Node_P2___pos';...
+%     Pseudo___Node_P3___pos'],[],1);
+% 
+% z_pseudo__pos___Q(3 * num_PMN___max + 1 : 4 * num_PMN___max) = reshape([...	% Expand logic vector so it fits a node vector with L1, L2, L3
+%     Pseudo___Node_Q1___pos';...
+%     Pseudo___Node_Q2___pos';...
+%     Pseudo___Node_Q3___pos'],[],1);
+% 
+% z_pseudo__pos_all = ...
+%     z_pseudo__pos___U | ...
+%     z_pseudo__pos_phi | ...
+%     z_pseudo__pos___P | ...
+%     z_pseudo__pos___Q   ...
+%     ;
+% 
+% z_pseudo__num___U = sum(z_pseudo__pos___U);
+% z_pseudo__num_phi = sum(z_pseudo__pos_phi);
+% z_pseudo__num___P = sum(z_pseudo__pos___P);
+% z_pseudo__num___Q = sum(z_pseudo__pos___Q);
+% z_pseudo__num_all = sum(z_pseudo__pos_all);   	% Get number of pseudo measurements in z
 
 %% Define static variables (TODO, adjust Comments)
 
@@ -465,7 +461,7 @@ fprintf('Main-Function: 5) Initializing State Estimation\n');	% Command window o
 Num_TimeStep        = end___TimeStep - start_TimeStep + 1;    	% Calculate number of time steps
 
 x__precise          = zeros(2 * num_PMN___max,	Num_TimeStep);  % Initialize vector of the precise (x_precise) of the augmented matrix approach (U,phi)
-x_estimate          = zeros(2 * num_PMN___max,	Num_TimeStep); 	% Initialize vector of the estimated network state (x_estimate_with_slack)         (U,phi)
+
 
 z_precise______all  = zeros(4 * num_PMN___max,	Num_TimeStep);	% Initialize vector of the precise (z__precise_AM) of the augmented matrix approach (U, phi, P, Q)
 
@@ -476,21 +472,6 @@ z_precise__virtual  = zeros(z_virtual_num_all,	Num_TimeStep);
 z_input_______meas  = zeros(z_meas____num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
 z_input_____pseudo  = zeros(z_pseudo__num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
 z_input____virtual  = zeros(z_virtual_num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-
-z_estimate          = zeros(num_PNM_Types * num_PMN___max, Num_TimeStep);
-z_estimate____meas  = zeros(z_meas____num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-z_estimate__pseudo  = zeros(z_pseudo__num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-z_estimate_virtual  = zeros(z_virtual_num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-
-r____meas           = zeros(z_meas____num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-r__pseudo           = zeros(z_pseudo__num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-r_virtual           = zeros(z_virtual_num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-
-pFeh____meas        = zeros(z_meas____num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-pFeh__pseudo        = zeros(z_pseudo__num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-pFeh_virtual        = zeros(z_virtual_num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
-
-r_normalized        = zeros(z_meas____num_all,     Num_TimeStep);  % Initialize vector the normalized residuals
 
 % BadData_Detection   = zeros(3,                  Num_TimeStep);  % Initialize matrix for BadData detection
 
@@ -573,7 +554,46 @@ for TimeStep = start_TimeStep:end___TimeStep
     z_input_______meas(:,k)    = z_precise_____meas(:,k) + Noise_meas;
     z_input_____pseudo(:,k)    = z_precise___pseudo(:,k);  % Pseudo generation (if pseudo values ocure)
     z_input____virtual(:,k)    = z_precise__virtual(:,k);
-    
+        
+    k = k + 1;
+end
+
+z_estimate = TaylorSE_AMA(start_TimeStep,end___TimeStep,z_input_______meas,z_input_____pseudo,C_AM,z_input____virtual,Hachtel_invers,z_meas____num_all,z_pseudo__num_all,z_virtual_num_all,H_AM,H,z_precise_____meas,z_precise___pseudo,num_PMN___max,Num_TimeStep,num_PNM_Types);
+
+%% Memory sequence
+
+fprintf('Main-Function: 7) Saving results\n');   % Command window output
+
+clear NodeRes_all;
+NodeRes_all = z_results2NodeRes_all(z_estimate,SincalModel.Info,end___TimeStep,num_PNM_Types,num_PMN___max,num_Nodes);
+BranchRes_all = NodeRes2BranchRes(NodeRes_all,SincalModel.Info,Y_L1L2L3);
+BranchRes_all_exakt = NodeRes2BranchRes(NodeRes_all_exakt,SincalModel.Info,Y_L1L2L3);
+
+end
+
+function z_estimate = TaylorSE_AMA(start_TimeStep,end___TimeStep,z_input_______meas,z_input_____pseudo,C_AM,z_input____virtual,Hachtel_invers,z_meas____num_all,z_pseudo__num_all,z_virtual_num_all,H_AM,H,z_precise_____meas,z_precise___pseudo,num_PMN___max,Num_TimeStep,num_PNM_Types)
+
+x_estimate          = zeros(2 * num_PMN___max,	Num_TimeStep); 	% Initialize vector of the estimated network state (x_estimate_with_slack)         (U,phi)
+
+z_estimate          = zeros(num_PNM_Types * num_PMN___max, Num_TimeStep);
+z_estimate____meas  = zeros(z_meas____num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+z_estimate__pseudo  = zeros(z_pseudo__num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+z_estimate_virtual  = zeros(z_virtual_num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+
+z_estimate_____all  = zeros(z_meas____num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+
+r____meas           = zeros(z_meas____num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+r__pseudo           = zeros(z_pseudo__num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+r_virtual           = zeros(z_virtual_num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+
+pFeh____meas        = zeros(z_meas____num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+pFeh__pseudo        = zeros(z_pseudo__num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+pFeh_virtual        = zeros(z_virtual_num_all,	Num_TimeStep);  % Initialize vector of the real (z_meas_AM)
+
+% r_normalized        = zeros(z_meas____num_all,     Num_TimeStep);  % Initialize vector the normalized residuals
+
+k = 1;
+for TimeStep = start_TimeStep:end___TimeStep
     rhs_AM                  = [...      % Create right hand side of the LSE for the augmented matrix approach
         z_input_______meas(:,k);...
         z_input_____pseudo(:,k);...
@@ -604,72 +624,7 @@ for TimeStep = start_TimeStep:end___TimeStep
     pFeh__pseudo(:,k) = z_precise___pseudo(:,k) - z_estimate__pseudo(:,k);
     pFeh_virtual(:,k) = z_input____virtual(:,k) - z_estimate_virtual(:,k);
     
-%     r_normalized(:,k) = abs(r____meas(:,k))./sqrt(abs(diag(R_residual)));	% Calculate normalized residuals
-    
+%         r_normalized(:,k) = abs(r____meas(:,k))./sqrt(abs(diag(R_residual)));	% Calculate normalized residuals
     k = k + 1;
 end
-
-%% Memory sequence
-
-fprintf('Main-Function: 7) Saving results\n');   % Command window output
-% Memory_Path = [cd,'\Auswertungen\temp\'];
-% if ~ isdir(Memory_Path)
-%     mkdir(Memory_Path)
-% end
-
-% if updateWaitbar('update',SE_waitbar,1,'Saving results')
-%             return
-% end
-
-clear NodeRes_all;
-NodeRes_all = z_results2NodeRes_all(z_estimate,SincalModel.Info,end___TimeStep,num_PNM_Types,num_PMN___max,num_Nodes);
-BranchRes_all = NodeRes2BranchRes(NodeRes_all,SincalModel.Info,Y_L1L2L3);
-BranchRes_all_exakt = NodeRes2BranchRes(NodeRes_all_exakt,SincalModel.Info,Y_L1L2L3);
-% save([Memory_Path, 'NodeRes_raw'],	'NodeRes_all','-v7.3');
-% save([Memory_Path, 'BranchRes_raw'],	'BranchRes_all','-v7.3');
-% 
-% save([Memory_Path, 'x__precise'        ],	'x__precise'        );
-% save([Memory_Path, 'x_estimate'        ],	'x_estimate'        );
-% 
-% save([Memory_Path, 'z_precise______all'],	'z_precise______all');
-% save([Memory_Path, 'z_precise_____meas'],	'z_precise_____meas');
-% save([Memory_Path, 'z_precise___pseudo'],	'z_precise___pseudo');
-% save([Memory_Path, 'z_precise__virtual'],	'z_precise__virtual');
-% 
-% save([Memory_Path, 'z_input_______meas'],	'z_input_______meas');
-% save([Memory_Path, 'z_input_____pseudo'],	'z_input_____pseudo');
-% save([Memory_Path, 'z_input____virtual'],	'z_input____virtual');
-% 
-% save([Memory_Path, 'z_estimate_____all'],	'z_estimate_____all');
-% save([Memory_Path, 'z_estimate____meas'],	'z_estimate____meas');
-% save([Memory_Path, 'z_estimate__pseudo'],	'z_estimate__pseudo');
-% save([Memory_Path, 'z_estimate_virtual'],	'z_estimate_virtual');
-% 
-% save([Memory_Path, 'r____meas'         ],	'r____meas'         );
-% save([Memory_Path, 'r__pseudo'         ],	'r__pseudo'         );
-% save([Memory_Path, 'r_virtual'         ],	'r_virtual'         );
-% 
-% save([Memory_Path, 'pFeh____meas'      ],   'pFeh____meas'    	);
-% save([Memory_Path, 'pFeh__pseudo'      ],	'pFeh__pseudo'  	);
-% save([Memory_Path, 'pFeh_virtual'      ],	'pFeh_virtual'     	);
-% 
-% save([Memory_Path, 'r_normalized'],            'r_normalized');
-
-% updateWaitbar('delete',SE_waitbar);
-
-%% Toc
-% fprintf('Time required: %d seconds\n\n', toc);
-% toc % not for function
-
-%% RB:
-
-% % Compare for voltage:
-% max_min_error = min(min(x__precise(1:702,:) - x_estimate(1:702,:)));
-% max_max_error = max(max(x__precise(1:702,:) - x_estimate(1:702,:)));
-% histogram(x__precise(1:702,:) - x_estimate(1:702,:));
-
-
 end
-
-
-
