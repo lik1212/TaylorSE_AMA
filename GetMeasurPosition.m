@@ -1,5 +1,4 @@
-% function GetMeasurPosition(Inputs)
-
+function MeasurPos = GetMeasurPosition(Inputs)
 %% Load SinInfo
 
 SincalModel.Name = Inputs.Grid_Name;    % Get sincal model Name
@@ -11,6 +10,7 @@ SincalModel.Info = ...
 if isfield(SincalModel.Info, 'TwoWindingTransformer')
     SincalModel.Info.Line = ...
         [SincalModel.Info.Line; SincalModel.Info.TwoWindingTransformer];
+    % TODO -> Replace Infeeder with 
 end
 
 num_Node   = size(SincalModel.Info.Node, 1);
@@ -71,14 +71,6 @@ MeasurPos.P3  (isnan(MeasurPos.Node2_ID) & ismember(MeasurPos.Node1_ID, Virtual_
 MeasurPos.Q1  (isnan(MeasurPos.Node2_ID) & ismember(MeasurPos.Node1_ID, Virtual_PQ_Node_ID )) = 3;
 MeasurPos.Q2  (isnan(MeasurPos.Node2_ID) & ismember(MeasurPos.Node1_ID, Virtual_PQ_Node_ID )) = 3;
 MeasurPos.Q3  (isnan(MeasurPos.Node2_ID) & ismember(MeasurPos.Node1_ID, Virtual_PQ_Node_ID )) = 3;
-
-%% Virtual Node Positions
-
-Virtual__Node_phi1_pos =   Infeeder_Node_pos;
-Virtual__Node_phi2_pos =   Infeeder_Node_pos;
-Virtual__Node_phi3_pos =   Infeeder_Node_pos;
-
-
 
 %% Pseudo Node Positions
 

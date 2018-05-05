@@ -16,8 +16,9 @@ Inputs.NodeRes_Name   = [Inputs.Grid_Name, '_NodeRes_raw.mat'  ];
 Inputs.BranchRes_Name = [Inputs.Grid_Name, '_BranchRes_raw.mat'];
 Inputs.pseudo         = 'false';
 
-MeasurPos = GetMeasurPosition(Inputs)
-[z_all_data, z_all_flag] = GetVector_z(Inputs);
+MeasurPos = GetMeasurPosition(Inputs);
+
+[z_all_data, z_all_flag] = GetVector_z(Inputs, MeasurPos);
 
 tic
 [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(Inputs);
