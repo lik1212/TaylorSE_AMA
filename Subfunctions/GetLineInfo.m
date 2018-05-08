@@ -4,12 +4,11 @@ function LineInfo = GetLineInfo(Inputs)
 %% Load SinInfo
 
 if Inputs.with_TR == false
-    SimDetails         = [Inputs.LF_Res_Path, Inputs.Simulation_Details];
-else
-    SimDetails         = [Inputs.LF_Res_Path, Inputs.Simulation_Details(1 : end - 4)   ,'_wo_TR.mat'];
+        SimDetails         = [Inputs.LF_Res_Path, Inputs.Simulation_Details                             ];
+else;   SimDetails         = [Inputs.LF_Res_Path, Inputs.Simulation_Details(1 : end - 4)   ,'_wo_TR.mat'];
 end
 
-load(SimDetails       ,'SimDetails')
+load(SimDetails ,'SimDetails')
 
 SinInfo = SimDetails.SinInfo;
 

@@ -1,10 +1,23 @@
-function [z_estimate, Optional] = new_algo(z_all_data, z_all_flag, LineInfo, U_eva)
+function [z_estimate, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, U_eva)
 %NEW_ALGO(Z_ALL_DATA, Z_ALL_FLAG, Y_L1L2L3) Summary of this function goes here
 %   Detailed explanation goes here
+%
+% Author(s):    R. Brandalik
+%               D. Henschel
+%               J. Tu
+%               P. Gassler
+%
+% Contact: brandalikrobert@gmail.com, brandalik@eit.uni-kl.de
+%
+% Special thanks go to the entire TUK ESEM team.
+%
+% Parts of the work were the result of the project CheapFlex, sponsored by
+% the German Federal Ministry of Economic Affairs and Energy as part of the
+% 6th Energy Research Programme of the German Federal Government.
 
 [Y_012, Y_012_Node_ID] = LineInfo2Y_012(LineInfo);
 Y_L1L2L3               = Y_012_to_Y_L1L2L3(Y_012);
-[H, H_index] = get_H(Y_L1L2L3, Y_012_Node_ID, U_eva);	
+[H, H_index] = get_H(Y_L1L2L3, Y_012_Node_ID, U_eva);
 
 
 %% Configurations

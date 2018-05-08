@@ -94,5 +94,5 @@ for start_node = 1:size(start_nodes_name_ID,1)
     List_Node2Node_real.(sprintf('Strang_%d',start_node)) = [List_Line.Node1_ID(1,1);List_Line.Node2_ID(logic_Node2_ID_real)];
     List_Node2Node_real.(sprintf('Strang_%d',start_node)) = [List_Node2Node_real.(sprintf('Strang_%d',start_node))(1:end-1,1), List_Node2Node_real.(sprintf('Strang_%d',start_node))(2:end,1)];
     
-end;
+end
 end

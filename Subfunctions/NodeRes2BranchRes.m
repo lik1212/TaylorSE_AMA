@@ -53,7 +53,7 @@ for k_line = 1 : nb_lines
         return
     end
 end
-clear NodeRes 
+clear NodeRes
 BranchRes = [BranchRes_12;BranchRes_21];
 clear BranchRes_12 BranchRes21
 BranchRes = array2table(BranchRes);

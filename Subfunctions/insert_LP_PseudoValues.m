@@ -1,5 +1,5 @@
 function NodeRes_mod = insert_LP_PseudoValues(NodeRes_all,SinInfo,LPs,type,list_name)
-%% 
+%%
 %
 %
 %
@@ -12,9 +12,9 @@ end
 switch type
     case 'list'
         nb_GLs = size(SinInfo.Load,1);
-%         nb_GLs_3p = nb_GLs / 3;
-%         Node_IDs = SinInfo.Load.Node1_ID;
-%         Node_IDs = unique(Node_IDs);
+        %         nb_GLs_3p = nb_GLs / 3;
+        %         Node_IDs = SinInfo.Load.Node1_ID;
+        %         Node_IDs = unique(Node_IDs);
         LP2GL_Lo = readtable(list_name,'Delimiter',';');
         nb_GLs_assign = size(LP2GL_Lo,1);
         num_Nodes = size(SinInfo.Node,1);
@@ -29,25 +29,25 @@ switch type
                 NodePos           = Node_k_Time_1_Pos : num_Nodes : size(NodeRes_all,1);
                 switch Phase
                     case 'L1'
-                        NodeRes_all.P1(NodePos) = ... 
+                        NodeRes_all.P1(NodePos) = ...
                             LPs.(LP2GL_Lo.Load_Profile{k}).P * 10^(-3) * (-1);
-                        NodeRes_all.Q1(NodePos) = ... 
+                        NodeRes_all.Q1(NodePos) = ...
                             LPs.(LP2GL_Lo.Load_Profile{k}).Q * 10^(-3) * (-1);
                     case 'L2'
-                        NodeRes_all.P2(NodePos) = ... 
+                        NodeRes_all.P2(NodePos) = ...
                             LPs.(LP2GL_Lo.Load_Profile{k}).P * 10^(-3) * (-1);
-                        NodeRes_all.Q2(NodePos) = ... 
+                        NodeRes_all.Q2(NodePos) = ...
                             LPs.(LP2GL_Lo.Load_Profile{k}).Q * 10^(-3) * (-1);
                     case 'L3'
-                        NodeRes_all.P3(NodePos) = ... 
+                        NodeRes_all.P3(NodePos) = ...
                             LPs.(LP2GL_Lo.Load_Profile{k}).P * 10^(-3) * (-1);
-                        NodeRes_all.Q3(NodePos) = ... 
+                        NodeRes_all.Q3(NodePos) = ...
                             LPs.(LP2GL_Lo.Load_Profile{k}).Q * 10^(-3) * (-1);
                 end
             else
                 warning('You want to assign a Load Profile to a Load in the Grid that doesn''t exist')
             end
-        end   
+        end
     case 'random'
         
         nb_GLs = size(SinInfo.Load,1);
@@ -63,7 +63,7 @@ switch type
             perm = ((randperm(nb_LPs_3p) - 1) * 3) + 1;
             if k == nb_k
                 for k_GL = 1 + (k-1)*nb_LPs_3p : nb_GLs_3p
-                    NodeRes_all.P1(NodeRes_all.Node_ID == Node_IDs(k_GL)) = ... 
+                    NodeRes_all.P1(NodeRes_all.Node_ID == Node_IDs(k_GL)) = ...
                         LPs.(fieldname_LPs{perm(k_GL - (k-1)*nb_LPs_3p)}).P * 10^(-3) * (-1);
                     NodeRes_all.P2(NodeRes_all.Node_ID == Node_IDs(k_GL)) = ...
                         LPs.(fieldname_LPs{perm(k_GL - (k-1)*nb_LPs_3p) + 1}).P * 10^(-3) * (-1);
@@ -93,7 +93,7 @@ switch type
                 end
             end
         end
-                
+        
     case 'mean_P'
         
     otherwise

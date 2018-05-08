@@ -2,6 +2,19 @@
 %  As input you need z_all_data, z_all_flag, U_eva and LineInfo, check
 %  the input data description for more details. All other parts of this
 %  Code are just an input/output preperation.
+%
+% Author(s):    R. Brandalik
+%               D. Henschel
+%               J. Tu
+%               P. Gassler
+%
+% Contact: brandalikrobert@gmail.com, brandalik@eit.uni-kl.de
+%
+% Special thanks go to the entire TUK ESEM team.
+%
+% Parts of the work were the result of the project CheapFlex, sponsored by
+% the German Federal Ministry of Economic Affairs and Energy as part of the
+% 6th Energy Research Programme of the German Federal Government.
 
 %% Clear start
 
@@ -36,7 +49,7 @@ tic
 
 %% Main estimation alfo
 
-[z_estimate, Optional] = new_algo(z_all_data, z_all_flag, LineInfo, U_eva);
+[z_estimate, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, U_eva);
 
 
 [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] =  get4compare(Inputs, z_estimate, Optional.Y_L1L2L3);

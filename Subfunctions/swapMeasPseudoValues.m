@@ -1,5 +1,5 @@
 function Node_Res_mod = swapMeasPseudoValues(NodeRes_all,SinInfo,GridNodeList,LPs,type,list)
-%% 
+%%
 %
 %
 %

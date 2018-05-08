@@ -9,16 +9,16 @@ function removeTR(Inputs)
 %% Initial matrix of measurements
 
 
-    SimDetails         = [Inputs.LF_Res_Path, Inputs.Simulation_Details];
+SimDetails         = [Inputs.LF_Res_Path, Inputs.Simulation_Details];
 
-    load(SimDetails       ,'SimDetails')
-      
-    SinInfo = SimDetails.SinInfo;
-    
+load(SimDetails       ,'SimDetails')
+
+SinInfo = SimDetails.SinInfo;
+
 if isfield(SinInfo, 'TwoWindingTransformer')
     NodeRes_PathName   = [Inputs.LF_Res_Path, Inputs.NodeRes_Name   ];
     BranchRes_PathName = [Inputs.LF_Res_Path, Inputs.BranchRes_Name];
-        
+    
     load(NodeRes_PathName  ,'NodeRes_all'  );
     load(BranchRes_PathName,'BranchRes_all');
     % remove TR from Results
@@ -31,7 +31,7 @@ if isfield(SinInfo, 'TwoWindingTransformer')
     Element_ID_TR       = SinInfo.TwoWindingTransformer.Element_ID;
     
     Terminal_ID_Infeeder = SinInfo.Terminal.Terminal_ID(SinInfo.Terminal.Element_ID == Element_ID_Infeeder);
-%     Terminal_ID_TR       = SinInfo.TwoWindingTransformer{:, {'Terminal1_ID', 'Terminal2_ID'}};
+    %     Terminal_ID_TR       = SinInfo.TwoWindingTransformer{:, {'Terminal1_ID', 'Terminal2_ID'}};
     
     Node_IDs_replace = [setdiff(Node_IDs_TR, Node_ID_Infeeder), Node_ID_Infeeder];
     
@@ -49,22 +49,22 @@ if isfield(SinInfo, 'TwoWindingTransformer')
     SinInfo = rmfield(SinInfo,'TwoWindingTransformer');
     
     SinInfo.Element(SinInfo.Element.Element_ID == Element_ID_TR, :) = [];
-    SinInfo.Element.Node1_ID(SinInfo.Element.Element_ID == Element_ID_Infeeder) = setdiff(Node_IDs_TR, Node_ID_Infeeder);  
-    SinInfo.Element.Element_ID(SinInfo.Element.Element_ID == Element_ID_Infeeder) = Element_ID_TR;    
+    SinInfo.Element.Node1_ID(SinInfo.Element.Element_ID == Element_ID_Infeeder) = setdiff(Node_IDs_TR, Node_ID_Infeeder);
+    SinInfo.Element.Element_ID(SinInfo.Element.Element_ID == Element_ID_Infeeder) = Element_ID_TR;
     
-    SinInfo.Infeeder.Node1_ID   =  setdiff(Node_IDs_TR, Node_ID_Infeeder);  
-    SinInfo.Infeeder.Element_ID = Element_ID_TR;    
+    SinInfo.Infeeder.Node1_ID   =  setdiff(Node_IDs_TR, Node_ID_Infeeder);
+    SinInfo.Infeeder.Element_ID = Element_ID_TR;
     
     SinInfo.Terminal(SinInfo.Terminal.Node_ID == Node_ID_Infeeder, :) = [];
     SinInfo.Terminal.Terminal_ID(SinInfo.Terminal.Element_ID == Element_ID_TR) = Terminal_ID_Infeeder;
-%     SinInfo.Infeeder.Element_ID = Element_ID_TR;
+    %     SinInfo.Infeeder.Element_ID = Element_ID_TR;
     % TU jos trebam Terminal_ID popraviti;
     
     SinInfo.Node(SinInfo.Node.Node_ID == Node_ID_Infeeder, :) = [];
     
     SimDetails.SinInfo = SinInfo;
 end
-    save([Inputs.LF_Res_Path, Inputs.NodeRes_Name(1 : end - 4) ,'_wo_TR.mat'],'NodeRes_all')
-    save([Inputs.LF_Res_Path, Inputs.BranchRes_Name(1 : end - 4) '_wo_TR.mat'],'BranchRes_all')
-    save([Inputs.LF_Res_Path, Inputs.Simulation_Details(1 : end - 4) ,'_wo_TR.mat'],'SimDetails')
+save([Inputs.LF_Res_Path, Inputs.NodeRes_Name(1 : end - 4) ,'_wo_TR.mat'],'NodeRes_all')
+save([Inputs.LF_Res_Path, Inputs.BranchRes_Name(1 : end - 4) '_wo_TR.mat'],'BranchRes_all')
+save([Inputs.LF_Res_Path, Inputs.Simulation_Details(1 : end - 4) ,'_wo_TR.mat'],'SimDetails')
 
