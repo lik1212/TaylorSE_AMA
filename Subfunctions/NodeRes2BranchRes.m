@@ -15,9 +15,9 @@ SinInfo.Node    = sortrows(SinInfo.Node,'Node_ID');
 NodeRes.U1_comp = NodeRes.U1 .* exp(1i * deg2rad(NodeRes.phi1));
 NodeRes.U2_comp = NodeRes.U2 .* exp(1i * deg2rad(NodeRes.phi2));
 NodeRes.U3_comp = NodeRes.U3 .* exp(1i * deg2rad(NodeRes.phi3));
-BranchRes_all_waitbar = waitbar(0,'Generating BranchRes_all','Name','AMA State Estimation','CreateCancelBtn',...
-    'setappdata(gcbf,''canceling'',1)');
-setappdata(BranchRes_all_waitbar,'canceling',0);
+% BranchRes_all_waitbar = waitbar(0,'Generating BranchRes_all','Name','AMA State Estimation','CreateCancelBtn',...
+%     'setappdata(gcbf,''canceling'',1)');
+% setappdata(BranchRes_all_waitbar,'canceling',0);
 
 for k_line = 1 : nb_lines
     Node1_ID = SinInfo.Line.Node1_ID(k_line);
@@ -49,9 +49,9 @@ for k_line = 1 : nb_lines
     BranchRes_21((k_line-1) * nb_instants + 1 : k_line * nb_instants,4) = I21(nb_instants + 1:nb_instants * 2);
     BranchRes_21((k_line-1) * nb_instants + 1 : k_line * nb_instants,5) = I21(2 * nb_instants + 1:nb_instants *3);
     BranchRes_21((k_line-1) * nb_instants + 1 : k_line * nb_instants,6) = 1:nb_instants;
-    if updateWaitbar('update',BranchRes_all_waitbar,k_line/nb_lines,'Generating BranchRes_all')
-        return
-    end
+%     if updateWaitbar('update',BranchRes_all_waitbar,k_line/nb_lines,'Generating BranchRes_all')
+%         return
+%     end
 end
 clear NodeRes
 BranchRes = [BranchRes_12;BranchRes_21];
@@ -60,5 +60,5 @@ BranchRes = array2table(BranchRes);
 BranchRes.Properties.VariableNames = {'Terminal1_ID','Terminal2_ID','I1','I2','I3','ResTime'};
 BranchRes = sortrows(BranchRes,'Terminal1_ID','ascend');
 BranchRes = sortrows(BranchRes,'ResTime','ascend');
-updateWaitbar('delete',BranchRes_all_waitbar);
+% updateWaitbar('delete',BranchRes_all_waitbar);
 end
