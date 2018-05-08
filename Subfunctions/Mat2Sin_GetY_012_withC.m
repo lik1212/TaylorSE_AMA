@@ -27,6 +27,8 @@ SinInfo.Node(SinInfo.Node.Node_ID == Node_ID_Infeeder,:) = [];
 
 LineInfoWanted = {'r','x','c','r0_r1','x0_x1','c0','l'};
 LineInfo = Mat2Sin_GetLineInfo(SinInfo,LineInfoWanted,Sin_Name,Sin_Path);
+LineInfo.c(:) = (1:size(LineInfo,1)) ;     % Temp, delete this
+LineInfo.c0(:) = (1:size(LineInfo,1));    % Temp, delete this
 
 % Number of nodes
 Node_num = size(SinInfo.Node,1);

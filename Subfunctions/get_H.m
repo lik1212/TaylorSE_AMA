@@ -19,7 +19,12 @@ delta1_eva  =    0     ;
 delta2_eva  =  2/3 * pi;
 delta3_eva  = -2/3 * pi;
 
-H_index = repmat(Y_012_index,3,1);              % H_index includes all connection between node id and node names
+H_index = table;
+H_index.Node1_ID = ...
+    repmat(Y_012_index,4,1);              % H_index includes all connection between node id and node names
+
+H_index.Phase     = repmat([1; 2; 3], 4 * size_Y / 3, 1);
+H_index.Meas_Type = repelem([1; 2; 3; 4], size_Y, 1);
 
 %% Initialize meaurement model matrix H
 H       = zeros(4*size_Y,2*size_Y);   % H includes all possible measurement modell equations
