@@ -1,0 +1,14 @@
+Meas_Type:
+
+	1 - Voltage
+	2 - Phase
+	3 - Active   Power
+	4 - Reactive Power
+	5 - Apparent Power
+	6 - Current
+
+Accur_Type:
+
+	1 - measurement value
+	2 - pseudo      value
+	3 - virtual     value
