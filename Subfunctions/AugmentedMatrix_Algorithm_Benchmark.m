@@ -401,7 +401,7 @@ z_pseudo__num_all = sum(z_pseudo__pos_all);   	% Get number of pseudo measuremen
 
 %% Define static variables (TODO, adjust Comments)
 
-fprintf('Main-Function: 3) Static Variables\n');	% Command window output
+% fprintf('Main-Function: 3) Static Variables\n');	% Command window output
 
 [H, ~] = get_H(Y_L1L2L3, Y_012_NodeNames, U_eva);	% Creation of measurement model matrix H_ideal and auxiliary matrix H_index
 

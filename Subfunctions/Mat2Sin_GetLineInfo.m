@@ -1,4 +1,4 @@
-function LineInfo = Mat2Sin_GetLineInfo(SinInfo,LineInfoWanted,Sin_Name,Sin_Path)
+function LineInfo = Mat2Sin_GetLineInfo(SinInfo, LineInfoWanted, Sin_Name, Sin_Path)
 % Mat2Sin_GetLineInfo - Get Line Parameters (Information) from Sincal 
 %
 %   LineInfo = Mat2Sin_GetLineInfo(SinInfo,LineInfoWanted,Sin_Name,Sin_Path)
@@ -26,20 +26,13 @@ function LineInfo = Mat2Sin_GetLineInfo(SinInfo,LineInfoWanted,Sin_Name,Sin_Path
 
 %% Matlab connection with the Access DB of the Sincal model 
 
-% Set the default path if no path is given
-if nargin<4
-    Sin_Path = [pwd,'\'];
-end
+if nargin < 4; Sin_Path = [pwd,'\']; end % Set the default path if no path is given
 
 % Correct the path if necessary
-if Sin_Path(end) ~= '\'
-    Sin_Path = [Sin_Path,'\'];
-end
+if Sin_Path(end) ~= '\'; Sin_Path = [Sin_Path,'\']; end 
 
-% Define an object for the connection with the DB
-a=struct;
-% Set the DB path:
-a.DB_Path = [Sin_Path,Sin_Name,'_files\database.mdb'];
+a=struct;   % Define an object for the connection with the DB
+a.DB_Path = [Sin_Path,Sin_Name,'_files\database.mdb']; % Set the DB path:
 
 % Setting of the Access COM server
 % try-catch To get a message if an error occur during the Matlab connection with the DB

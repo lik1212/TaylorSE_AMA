@@ -34,7 +34,7 @@ sigma___Q_Pseu  = 50;                 % Var
 % start_TimeStep  = 1;
 % end___TimeStep  = 1440;
 
-fprintf('Main-Function: 3) Static Variables\n');	% Command window output
+% fprintf('Main-Function: 3) Static Variables\n');	% Command window output
 
 % TODO: Ubersetzung irgenwir
 

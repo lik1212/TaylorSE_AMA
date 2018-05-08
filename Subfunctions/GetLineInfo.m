@@ -12,7 +12,7 @@ load(SimDetails ,'SimDetails')
 
 SinInfo = SimDetails.SinInfo;
 
-LineInfoWanted = {'r','x','c','r0_r1','x0_x1','c0','l'};
+LineInfoWanted = {'r', 'x', 'c', 'r0_r1', 'x0_x1', 'c0', 'l'};
 LineInfo = Mat2Sin_GetLineInfo(SinInfo,LineInfoWanted,Inputs.Grid_Name,Inputs.Grid_Path); % TODO, replace with the SQL function!
 
 Col2Add = {'Terminal1_ID', 'Node1_ID', 'Flag_State1', 'Terminal2_ID', 'Node2_ID', 'Flag_State2'};
