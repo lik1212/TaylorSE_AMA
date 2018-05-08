@@ -1,6 +1,10 @@
-function z_estimate = new_algo(z_all_data, z_all_flag, H, H_index)
+function [z_estimate, Optional] = new_algo(z_all_data, z_all_flag, LineInfo, U_eva)
 %NEW_ALGO(Z_ALL_DATA, Z_ALL_FLAG, Y_L1L2L3) Summary of this function goes here
 %   Detailed explanation goes here
+
+[Y_012, Y_012_Node_ID] = LineInfo2Y_012(LineInfo);
+Y_L1L2L3               = Y_012_to_Y_L1L2L3(Y_012);
+[H, H_index] = get_H(Y_L1L2L3, Y_012_Node_ID, U_eva);	
 
 
 %% Configurations
@@ -88,3 +92,4 @@ for k = 1 : size(z_all_data,2)
     
 end
 
+Optional.Y_L1L2L3 = Y_L1L2L3;
