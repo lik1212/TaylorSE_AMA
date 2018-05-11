@@ -45,14 +45,14 @@ if Inputs.with_TR; removeTR(Inputs); end
 MeasurPos                = GetMeasurPosition(Inputs);
 [z_all_data, z_all_flag] = GetVector_z(Inputs, MeasurPos);
 LineInfo = GetLineInfo(Inputs);
-U_eva           = 400/sqrt(3); % Set voltage amount of evaluation (eva) point of linearization
+Inputs.U_eva           = 400/sqrt(3); % Set voltage amount of evaluation (eva) point of linearization
 
 
 tic
 
 %% Main estimation alfo
 
-[z_estimate, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, U_eva);
+[z_estimate, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs);
 
 
 [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] =  get4compare(Inputs, z_estimate, Optional.Y_L1L2L3);

@@ -1,4 +1,4 @@
-function [z_estimate, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, U_eva)
+function [z_estimate, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs)
 %NEW_ALGO(Z_ALL_DATA, Z_ALL_FLAG, Y_L1L2L3) Summary of this function goes here
 %   Detailed explanation goes here
 %
@@ -14,6 +14,11 @@ function [z_estimate, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo,
 % Parts of the work were the result of the project CheapFlex, sponsored by
 % the German Federal Ministry of Economic Affairs and Energy as part of the
 % 6th Energy Research Programme of the German Federal Government.
+
+
+Settings = defaultSettings(Inputs);
+
+U_eva = Settings.U_eva;
 
 [Y_012, Y_012_Node_ID] = LineInfo2Y_012(LineInfo);
 Y_L1L2L3               = Y_012_to_Y_L1L2L3(Y_012);
