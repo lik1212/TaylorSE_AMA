@@ -20,26 +20,29 @@
 
 path(pathdef); clear; close; clc
 
-%% Input preperation
+
+%% Path preperation
+
+addpath([pwd,'\Subfunctions'       ]);  % Add subfunction path
+addpath([pwd,'\Subfunctions4Sincal']);  % Add subfunction path for Sincal
+
+%% Prepare Sincal Results as input for the TaylorSE_AMA
+%  This is not part of the main SE, just the input preperation
 
 Inputs                    = struct                                       ;
 Inputs.Grid_Name          = 'S1a_de'                                     ;
 Inputs.LF_Res_Path        = [pwd, '\LoadFlow_Results\'                  ];
-Inputs.Grid_Path          = [pwd, '\Sincal_Grids\'                      ];
+Inputs.Grid_Path          = [pwd, '\Subfunctions4Sincal\Sincal_Grids\'  ];
 Inputs.NodeRes_Name       = [Inputs.Grid_Name, '_NodeRes_raw.mat'       ];
 Inputs.BranchRes_Name     = [Inputs.Grid_Name, '_BranchRes_raw.mat'     ];
 Inputs.Simulation_Details = [Inputs.Grid_Name, '_Simulation_Details.mat'];
 Inputs.with_TR            = true                                         ;
 Inputs.pseudo             = false                                        ;  
 
-%% Path preperation
-
-addpath([pwd,'\Subfunctions']);  % Add subfunction path
-
-%% Prepare Sincal Results as input for the TaylorSE_AMA
-
+% Remove trafo if in Results
 if Inputs.with_TR; removeTR(Inputs); end
-MeasurPos = GetMeasurPosition(Inputs);
+
+MeasurPos                = GetMeasurPosition(Inputs);
 [z_all_data, z_all_flag] = GetVector_z(Inputs, MeasurPos);
 LineInfo = GetLineInfo(Inputs);
 U_eva           = 400/sqrt(3); % Set voltage amount of evaluation (eva) point of linearization
