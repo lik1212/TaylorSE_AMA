@@ -29,36 +29,32 @@ addpath([pwd,'\Files4Sincal\Subfunctions']);  % Add subfunction path for Sincal
 %% Prepare Sincal Results as input for the TaylorSE_AMA
 %  This is not part of the main SE, just the input preperation
 
-Inputs                    = struct                                       ;
-Inputs.Grid_Name          = 'S1a_de'                                     ;
-Inputs.LF_Res_Path        = [pwd, '\LoadFlow_Results\'                  ];
-Inputs.Grid_Path          = [pwd, '\Subfunctions4Sincal\Sincal_Grids\'  ];
-Inputs.NodeRes_Name       = [Inputs.Grid_Name, '_NodeRes_raw.mat'       ];
-Inputs.BranchRes_Name     = [Inputs.Grid_Name, '_BranchRes_raw.mat'     ];
-Inputs.Simulation_Details = [Inputs.Grid_Name, '_Simulation_Details.mat'];
-Inputs.with_TR            = true                                         ;
-Inputs.pseudo             = false                                        ;  
+Input_Prep                    = struct                                       ;
+Input_Prep.Grid_Name          = 'S1a_de'                                     ;
+Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                  ];
+Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'  ];
+Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw.mat'       ];
+Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw.mat'     ];
+Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details.mat'];
+Input_Prep.with_TR            = true                                         ;
+Input_Prep.pseudo             = false                                        ;  
 
 % Remove trafo if in Results
-if Inputs.with_TR; removeTR(Inputs); end
+if Input_Prep.with_TR; removeTR(Input_Prep); end
 
-MeasurPos                = GetMeasurPosition(Inputs);
-[z_all_data, z_all_flag] = GetVector_z(Inputs, MeasurPos);
-LineInfo                 = GetLineInfo(Inputs);
-Inputs.U_eva             = 400/sqrt(3); % Set voltage amount of evaluation (eva) point of linearization
+MeasurPos                = GetMeasurPosition(Input_Prep);
+[z_all_data, z_all_flag] = GetVector_z(Input_Prep, MeasurPos); 
+% TODO, add noise!!!
+LineInfo                 = GetLineInfo(Input_Prep);
+Inputs_SE.U_eva             = 400/sqrt(3); % Set voltage amount of evaluation (eva) point of linearization
 
-
-tic
 
 %% Main estimation alfo
 
-[z_estimate, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs);
+[x_hat, z_hat, z_hat_all, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
+[BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = get4compare(Input_Prep, z_hat_all, Optional.Y_L1L2L3);
+% [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(Input_Prep);
 
-
-[BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] =  get4compare(Inputs, z_estimate, Optional.Y_L1L2L3);
-% [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(Inputs);
-toc
-% 
 subplot(2,1,1)
 plot(NodeRes_all        .U1 - NodeRes_all_exakt.U1)
 subplot(2,1,2)

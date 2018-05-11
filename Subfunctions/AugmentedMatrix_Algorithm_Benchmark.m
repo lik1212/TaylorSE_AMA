@@ -1,4 +1,4 @@
-function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(Inputs)
+function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = AugmentedMatrix_Algorithm_Benchmark(Input_Prep)
 %% AugmentedMatrix_Algorithm_Benchmark
 % 
 % AugmentedMatrix_Algorithm_Benchmark - TODO
@@ -23,7 +23,7 @@ function [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = 
 
 %% Check Settings
 
-Settings = defaultSettings(Inputs); % For future they will be some default Settings.
+Settings = defaultSettings(Input_Prep); % For future they will be some default Settings.
 
 NodeRes_PathName   = [Settings.LF_Res_Path, Settings.NodeRes_Name   ];
 BranchRes_PathName = [Settings.LF_Res_Path, Settings .BranchRes_Name];
