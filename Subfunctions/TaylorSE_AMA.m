@@ -15,10 +15,12 @@ function [x_hat, z_hat, z_hat_all, Optional] = TaylorSE_AMA(z_all_data, z_all_fl
 % the German Federal Ministry of Economic Affairs and Energy as part of the
 % 6th Energy Research Programme of the German Federal Government.
 
+%% Inputs to Settings
 
 Settings = defaultSettings(Inputs);
+U_eva    = Settings.U_eva;
 
-U_eva = Settings.U_eva;
+%% TODO
 
 [Y_012, Y_012_Node_ID] = LineInfo2Y_012(LineInfo);
 Y_L1L2L3               = Y_012_to_Y_L1L2L3(Y_012);
