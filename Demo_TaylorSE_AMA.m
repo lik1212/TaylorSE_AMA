@@ -23,8 +23,8 @@ path(pathdef); clear; close; clc
 
 %% Path preperation
 
-addpath([pwd,'\Subfunctions'       ]);  % Add subfunction path
-addpath([pwd,'\Subfunctions4Sincal']);  % Add subfunction path for Sincal
+addpath([pwd,             '\Subfunctions']);  % Add subfunction path
+addpath([pwd,'\Files4Sincal\Subfunctions']);  % Add subfunction path for Sincal
 
 %% Prepare Sincal Results as input for the TaylorSE_AMA
 %  This is not part of the main SE, just the input preperation
@@ -44,8 +44,8 @@ if Inputs.with_TR; removeTR(Inputs); end
 
 MeasurPos                = GetMeasurPosition(Inputs);
 [z_all_data, z_all_flag] = GetVector_z(Inputs, MeasurPos);
-LineInfo = GetLineInfo(Inputs);
-Inputs.U_eva           = 400/sqrt(3); % Set voltage amount of evaluation (eva) point of linearization
+LineInfo                 = GetLineInfo(Inputs);
+Inputs.U_eva             = 400/sqrt(3); % Set voltage amount of evaluation (eva) point of linearization
 
 
 tic

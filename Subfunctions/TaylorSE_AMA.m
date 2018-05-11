@@ -22,20 +22,21 @@ U_eva = Settings.U_eva;
 
 [Y_012, Y_012_Node_ID] = LineInfo2Y_012(LineInfo);
 Y_L1L2L3               = Y_012_to_Y_L1L2L3(Y_012);
-[H, H_index] = get_H(Y_L1L2L3, Y_012_Node_ID, U_eva);
+[H, H_index]           = get_H(Y_L1L2L3, Y_012_Node_ID, U_eva);
 
 
 %% Configurations
 
 fprintf('AugmentedMatrix_Algorithm\n\n');   % Command window output
-sigma___U_Meas  = 0.1;                % Set standard deviation of voltage (in V) and power measurements (in W respectively var), Meas - Measured
-sigma_phi_Meas  = 0.01;
-sigma___P_Meas  = 1;
-sigma___Q_Meas  = 1;
-sigma___U_Pseu  = NaN;                % Set standard deviation of voltage (in V) and power measurements (in W respectively var), Pseu - Pseudo
-sigma_phi_Pseu  = NaN;
-sigma___P_Pseu  = 50;                 % Watt
-sigma___Q_Pseu  = 50;                 % Var
+% This has to be defined in z_all_flag!
+% sigma___U_Meas  = 0.1;                % Set standard deviation of voltage (in V) and power measurements (in W respectively var), Meas - Measured
+% sigma_phi_Meas  = 0.01;
+% sigma___P_Meas  = 1;
+% sigma___Q_Meas  = 1;
+% sigma___U_Pseu  = NaN;                % Set standard deviation of voltage (in V) and power measurements (in W respectively var), Pseu - Pseudo
+% sigma_phi_Pseu  = NaN;
+% sigma___P_Pseu  = 50;                 % Watt
+% sigma___Q_Pseu  = 50;                 % Var
 % start_TimeStep  = 1;
 % end___TimeStep  = 1440;
 
