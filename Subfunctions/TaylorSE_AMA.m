@@ -1,4 +1,4 @@
-function [x_hat, z_hat, z_hat_all, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE)
+function [x_hat, z_hat, z_hat_full, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE)
 %NEW_ALGO(Z_ALL_DATA, Z_ALL_FLAG, Y_L1L2L3) Summary of this function goes here
 %   Detailed explanation goes here
 %
@@ -17,6 +17,7 @@ function [x_hat, z_hat, z_hat_all, Optional] = TaylorSE_AMA(z_all_data, z_all_fl
 
 %% Inputs to Settings
 
+if nargin < 4; Inputs = struct; end
 Settings = defaultSettings(Inputs_SE);
 U_eva    = Settings.U_eva;
 
@@ -67,7 +68,7 @@ Hachtel     = [ ...
 % Calculate diagonal matrix R_r_estimate for standard deviations of estimated residuals
 Hachtel_invers  = Hachtel \ eye(size(Hachtel,1));
 x_hat = NaN(size(H,2), size(z_all_data_order,2)); % Initial
-z_hat_all = NaN(size(H,1), size(z_all_data_order,2)); % Initial
+z_hat_full = NaN(size(H,1), size(z_all_data_order,2)); % Initial
 z_hat     = NaN(size(z_all_data, 1), size(z_all_data_order,2)); % Initial
 
 for k = 1 : size(z_all_data_order,2)
@@ -82,7 +83,7 @@ for k = 1 : size(z_all_data_order,2)
     x_hat(:,k)         = solution_vector(      ...
         HC_switch : ...
         end               - numel(C_flag)     );
-    z_hat_all(:,k)         = H *    x_hat(:,k);
+    z_hat_full(:,k)         = H *    x_hat(:,k);
     z_hat(:,k) = H_init * x_hat(:,k);	% Calculate estimated measurement values with the help of the estimated network state
 end
 Optional.Y_L1L2L3 = Y_L1L2L3;
