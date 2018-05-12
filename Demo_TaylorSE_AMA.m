@@ -29,7 +29,7 @@ addpath([pwd,'\Files4Sincal\Subfunctions']);  % Add subfunction path for Sincal
 %  This is not part of the main SE, just the input preperation
 
 Input_Prep                    = struct                                           ;
-Input_Prep.Grid_Name          = 'S4a_de'                                         ;
+Input_Prep.Grid_Name          = 'S1a_de'                                         ;
 Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                  ];
 Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'                    ];
 Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw.mat'       ];
@@ -62,3 +62,7 @@ subplot(2,1,1)
 plot(NodeRes_all        .U1 - NodeRes_all_exakt.U1)
 subplot(2,1,2)
 plot(BranchRes_all_exakt.I1 - BranchRes_all.    I1)
+
+%% General SE with AMA
+
+[x_hat, z_hat, z_hat_all, Optional] = GenSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
