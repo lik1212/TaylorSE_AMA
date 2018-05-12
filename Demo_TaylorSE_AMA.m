@@ -29,13 +29,13 @@ addpath([pwd,'\Files4Sincal\Subfunctions']);  % Add subfunction path for Sincal
 %  This is not part of the main SE, just the input preperation
 
 Input_Prep                    = struct                                           ;
-Input_Prep.Grid_Name          = 'S1a_de'                                         ;
+Input_Prep.Grid_Name          = 'S_3Nodes'                                         ;
 Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                  ];
 Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'                    ];
 Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw.mat'       ];
 Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw.mat'     ];
 Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details.mat'];
-Input_Prep.with_TR            = true                                             ;
+Input_Prep.with_TR            = false                                             ;
 Input_Prep.pseudo             = false                                            ;  
 
 %% Prepare Data
@@ -70,4 +70,4 @@ toc
 
 %% General SE with AMA
 
-[x_hat, z_hat, z_hat_full, Optional] = GenSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
+% [x_hat, z_hat, z_hat_full, Optional] = GenSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);

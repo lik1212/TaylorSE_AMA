@@ -22,7 +22,6 @@ x_hat = [repmat(400/sqrt(3),size(Y_L1L2L3,1),1); ...
     z_all_data(z_all_flag.Accur_Type == 3 & z_all_flag.Meas_Type == 2 & z_all_flag.Phase == 2) ; ...
     z_all_data(z_all_flag.Accur_Type == 3 & z_all_flag.Meas_Type == 2 & z_all_flag.Phase == 3)], size(Y_L1L2L3,1)/3,1)]; 
 
-
 size_Y	= size(Y_L1L2L3,1);	% Get number of grid nodes
 H_index = table;
 H_index.Node1_ID = ...
@@ -54,12 +53,14 @@ C_flag = HC_flag(HC_switch :           end, :);
 z_all_data_with_phi = z_all_data_with_phi([1:3:9,2:3:9,3:3:9,10:3:18,11:3:18,12:3:18,19:3:27,20:3:27,21:3:27,28:3:36,29:3:36,30:3:36],1);
 for k = 1 : 10
     
-    % x_perfect = z_all_data_with_phi(1:18,1);
-    % z_SE_perfect = get_z_SE(Y_L1L2L3, Y_012_Node_ID, x_perfect); % Probablty this part is wrong too.
+%     x_perfect = z_all_data_with_phi(1:18,1);
+%     z_SE_perfect = get_z_SE(Y_L1L2L3, Y_012_Node_ID, x_perfect); % Probablty this part is wrong too.
     z_SE = get_z_SE(Y_L1L2L3, Y_012_Node_ID, x_hat); % Probablty this part is wrong too.
-    % H_perfect = get_H_SE(Y_L1L2L3, Y_012_Node_ID, x_perfect); % Probablty this part is wrong too.
+    z_SE(size(z_SE,1)/2 + 1 : end) = z_SE(size(z_SE,1)/2 + 1 : end) * 2;
+%     H_perfect = get_H_SE(Y_L1L2L3, Y_012_Node_ID, x_perfect); % Probablty this part is wrong too.
     H = get_H_SE(Y_L1L2L3, Y_012_Node_ID, x_hat); % Probablty this part is wrong too.
-    
+    H(size(H,1)/2+1:end,size(H,2)/2+1:end) = 0;
+    H(:,13:end) = []; % Temp
     H_AM   = H(H_flag,:);
     C_AM   = H(C_flag,:);
     
@@ -88,7 +89,7 @@ for k = 1 : 10
     x_delta(:,1)         = solution_vector(      ...
         HC_switch : ...
         end               - numel(C_flag)     );
-    x_hat = x_hat + x_delta;
+    x_hat(1:numel(x_delta)) = x_hat(1:numel(x_delta)) + x_delta;
     
 end
 %%

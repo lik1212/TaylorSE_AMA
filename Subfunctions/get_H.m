@@ -32,7 +32,7 @@ H       = zeros(4*size_Y,2*size_Y);   % H includes all possible measurement mode
 %%  Set measurement modell equations for voltage amounts U_L1L2L3
 H(1:2*size_Y,1:2*size_Y) = eye(2*size_Y);
 
-%%  Set measurement modell equations for active power P_L1L2L3
+%%  Set measurement modell equations for active and reactive power
 for k_P = 1:size_Y
     for k_Pos = 1:size_Y
         case_phase = mod(k_P,3) - mod(k_Pos,3);
@@ -44,25 +44,9 @@ for k_P = 1:size_Y
             case {-2,1} % case L2-L1 L3-L2 L1-L3
                 delta_eva = delta3_eva;
         end
-        H(2*size_Y+k_P,k_Pos)         = U_eva   * (cos(delta_eva)*G_ij(k_P,k_Pos) + sin(delta_eva)*B_ij(k_P,k_Pos));
-        H(2*size_Y+k_P,size_Y+k_Pos)  = U_eva^2 * (sin(delta_eva)*G_ij(k_P,k_Pos) - cos(delta_eva)*B_ij(k_P,k_Pos));
+        H(2*size_Y+k_P,k_Pos)         = U_eva   * ( cos(delta_eva) * G_ij(k_P,k_Pos) + sin(delta_eva) * B_ij(k_P,k_Pos));
+        H(2*size_Y+k_P,size_Y+k_Pos)  = U_eva^2 * ( sin(delta_eva) * G_ij(k_P,k_Pos) - cos(delta_eva) * B_ij(k_P,k_Pos));
+        H(3*size_Y+k_P,k_Pos)         = U_eva   * ( sin(delta_eva) * G_ij(k_P,k_Pos) - cos(delta_eva) * B_ij(k_P,k_Pos));
+        H(3*size_Y+k_P,size_Y+k_Pos)  = U_eva^2 * (-cos(delta_eva) * G_ij(k_P,k_Pos) - sin(delta_eva) * B_ij(k_P,k_Pos));
     end
-end
-
-%%  Set measurement modell equations for reactive power Q_L1L2L3
-for k_P = 1:size_Y
-    for k_Pos = 1:size_Y
-        case_phase = mod(k_P,3)-mod(k_Pos,3);
-        switch case_phase
-            case 0
-                delta_eva = delta1_eva;
-            case {-1,2}
-                delta_eva = delta2_eva;
-            case {-2,1}
-                delta_eva = delta3_eva;
-        end
-        H(3*size_Y+k_P,k_Pos)          	= U_eva   * ( sin(delta_eva)*G_ij(k_P,k_Pos) - cos(delta_eva)*B_ij(k_P,k_Pos));
-        H(3*size_Y+k_P,size_Y+k_Pos)    = U_eva^2 * (-cos(delta_eva)*G_ij(k_P,k_Pos) - sin(delta_eva)*B_ij(k_P,k_Pos));
-    end
-end
 end
