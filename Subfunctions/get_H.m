@@ -1,4 +1,4 @@
-function [H, H_index] = get_H(Y_L1L2L3, Y_012_index, U_eva)
+function [H, H_index] = get_H(Y_L1L2L3, Y_012_Node_ID, U_eva)
 %%  Function manual:
 %   This function creates the measurement modell matrix H for the
 %   evaluation point {U_eva,delta_eva} of the Taylor Series of the
@@ -21,7 +21,7 @@ delta3_eva  = -2/3 * pi;
 
 H_index = table;
 H_index.Node1_ID = ...
-    repmat(Y_012_index,4,1);              % H_index includes all connection between node id and node names
+    repmat(Y_012_Node_ID,4,1);              % H_index includes all connection between node id and node names
 
 H_index.Phase     = repmat([1; 2; 3], 4 * size_Y / 3, 1);
 H_index.Meas_Type = repelem([1; 2; 3; 4], size_Y, 1);
