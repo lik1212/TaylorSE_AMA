@@ -55,14 +55,19 @@ Inputs_SE.U_eva = 400/sqrt(3); % Voltage of linearization evaluation (eva)
 
 %% Main estimation alfo
 
-[x_hat, z_hat, z_hat_all, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
-[BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = get4compare(Input_Prep, z_hat_all, Optional.Y_L1L2L3);
+tic
+[x_hat, z_hat, z_hat_full, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
+toc
 
-subplot(2,1,1)
-plot(NodeRes_all        .U1 - NodeRes_all_exakt.U1)
-subplot(2,1,2)
-plot(BranchRes_all_exakt.I1 - BranchRes_all.    I1)
+%% Compare results with input
+
+% % [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = get4compare(Input_Prep, z_hat_full, Optional.Y_L1L2L3);
+% % 
+% % subplot(2,1,1)
+% % plot(NodeRes_all        .U1 - NodeRes_all_exakt.U1)
+% % subplot(2,1,2)
+% % plot(BranchRes_all_exakt.I1 - BranchRes_all.    I1)
 
 %% General SE with AMA
 
-[x_hat, z_hat, z_hat_all, Optional] = GenSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
+[x_hat, z_hat, z_hat_full, Optional] = GenSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
