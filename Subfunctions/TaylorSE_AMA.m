@@ -1,4 +1,4 @@
-function [x_hat, z_hat, z_hat_all, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs)
+function [x_hat, z_hat, z_hat_all, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE)
 %NEW_ALGO(Z_ALL_DATA, Z_ALL_FLAG, Y_L1L2L3) Summary of this function goes here
 %   Detailed explanation goes here
 %
@@ -17,7 +17,7 @@ function [x_hat, z_hat, z_hat_all, Optional] = TaylorSE_AMA(z_all_data, z_all_fl
 
 %% Inputs to Settings
 
-Settings = defaultSettings(Inputs);
+Settings = defaultSettings(Inputs_SE);
 U_eva    = Settings.U_eva;
 
 %% TODO
