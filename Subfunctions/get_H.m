@@ -1,9 +1,12 @@
 function [H, H_index] = get_H(Y_L1L2L3, Y_012_Node_ID, U_eva)
-%%  Function manual:
+%GET_H Prepare the measurement matrix H of all Node measurements for U,
+%   phi, P and Q
+%   
 %   This function creates the measurement modell matrix H for the
 %   evaluation point {U_eva,delta_eva} of the Taylor Series of the
 %   measurement modell equations for active power P and reactive power Q
-%% TODO: Adjust comments
+
+%% Preperation
 
 size_Y	= size(Y_L1L2L3,1);	% Get number of grid nodes
 G_ij    = real(Y_L1L2L3);	% Get real part (condcutance) of admmittance matrix
@@ -20,16 +23,14 @@ delta2_eva  =  2/3 * pi;
 delta3_eva  = -2/3 * pi;
 
 H_index = table;
-H_index.Node1_ID = ...
-    repmat(Y_012_Node_ID,4,1);              % H_index includes all connection between node id and node names
-
+H_index.Node1_ID  = repmat(Y_012_Node_ID,4,1);
 H_index.Phase     = repmat([1; 2; 3], 4 * size_Y / 3, 1);
 H_index.Meas_Type = repelem([1; 2; 3; 4], size_Y, 1);
 
 %% Initialize meaurement model matrix H
-H       = zeros(4*size_Y,2*size_Y);   % H includes all possible measurement modell equations
+H = zeros(4*size_Y,2*size_Y);   % H includes all possible measurement model equations
 
-%%  Set measurement modell equations for voltage amounts U_L1L2L3
+%% Set measurement modell equations for voltage magnitues and angles U_L1L2L3
 H(1:2*size_Y,1:2*size_Y) = eye(2*size_Y);
 
 %%  Set measurement modell equations for active and reactive power

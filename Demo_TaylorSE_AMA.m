@@ -29,25 +29,29 @@ addpath([pwd,'\Files4Sincal\Subfunctions']);  % Add subfunction path for Sincal
 %  This is not part of the main SE, just the input preperation
 
 Input_Prep                    = struct                                           ;
-Input_Prep.Grid_Name          = 'S_3Nodes'                                         ;
+Input_Prep.Grid_Name          = 'S_3Nodes'                                       ;
 Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                  ];
 Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'                    ];
 Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw.mat'       ];
 Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw.mat'     ];
 Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details.mat'];
-Input_Prep.with_TR            = false                                             ;
+Input_Prep.with_TR            = false                                            ;
 Input_Prep.pseudo             = false                                            ;  
 
-%% Prepare Data
+%% Prepare Measurement Data from Sincal
 
 % Remove trafo if in Results
 if Input_Prep.with_TR; removeTR(Input_Prep); end
+LineInfo  = GetLineInfo      (Input_Prep);
+MeasurPos = GetMeasurPosition(Input_Prep);
 
-LineInfo                 = GetLineInfo(Input_Prep);
-MeasurPos                = GetMeasurPosition(Input_Prep);
+% Get measurement data
 [z_all_data, z_all_flag] = GetVector_z(Input_Prep, MeasurPos); 
-rng(0);     % Add noise;
-z_all_data = z_all_data + normrnd(0, 1, size(z_all_data)) .* z_all_flag.Sigma;
+
+%% Add noise
+
+rng(0);
+z_all_data_noisy = z_all_data + normrnd(0, 1, size(z_all_data)) .* z_all_flag.Sigma;
 
 %% Inputs for State Estimation (can be extended with Inputs)
 
@@ -56,7 +60,7 @@ Inputs_SE.U_eva = 400/sqrt(3); % Voltage of linearization evaluation (eva)
 %% Main estimation alfo
 
 tic
-[x_hat, z_hat, z_hat_full, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
+[x_hat, z_hat, z_hat_full, Optional] = TaylorSE_AMA(z_all_data_noisy, z_all_flag, LineInfo, Inputs_SE);
 toc
 
 %% Compare results with input

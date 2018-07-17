@@ -77,7 +77,7 @@ ADO_rs = invoke(a.conn,'Execute',sql);
 % Get the nodes from the Recordset (Values in the current Column of the current Table
 SinTerminal = invoke(ADO_rs,'GetRows')';
 % Number of Nodes
-num_of_Terminal = size(SinTerminal,1);
+% num_of_Terminal = size(SinTerminal,1);
 
 % Save Nodes in SinInfo
 SinInfo.Terminal = cell2table(SinTerminal,'VariableNames',{'Terminal_ID','Element_ID','Node_ID','Flag_State'});
@@ -119,7 +119,7 @@ try
     SinElementsThreePortTypes = invoke(ADO_rs,'GetRows')';
     % In this loop delete the free spaces of the strings in 
     % SinElementsThreePortTypes with "strtrim"
-    for kE = 1:numel(SinElementsThreePortTypes);
+    for kE = 1:numel(SinElementsThreePortTypes)
         SinElementsThreePortTypes{kE} = strtrim(SinElementsThreePortTypes{kE});
     end
 catch
@@ -134,7 +134,7 @@ ADO_rs = invoke(a.conn,'Execute',sql);
 SinElementsTwoPortTypes = unique(invoke(ADO_rs,'GetRows')');
 % In this loop delete the free spaces of the strings in 
 % SinElementsTwoPortTypes with "strtrim"
-for kE = 1:numel(SinElementsTwoPortTypes);
+for kE = 1:numel(SinElementsTwoPortTypes)
     SinElementsTwoPortTypes{kE} = strtrim(SinElementsTwoPortTypes{kE});
 end
 % Get the Single port Element types
@@ -221,5 +221,6 @@ end
 %% Close the connection with the DB
 
 a.conn.Close
+a.conn = deal([]); %#ok
 
 end
