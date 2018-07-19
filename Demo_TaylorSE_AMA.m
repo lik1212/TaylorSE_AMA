@@ -1,7 +1,10 @@
-%% Demostration file for Taylor SE with the Augmented Matrix approach
+%% Demostration file for Taylor SE with the Augmented Matrix approach &
+%  Sincal power flow data as input
+%
 %  As input you need z_all_data, z_all_flag, U_eva and LineInfo, check
 %  the input data description for more details. All other parts of this
-%  Code are just an input/output preperation.
+%  Code are just an input/output preperation for better comparison with
+%  Sincal power flow results.
 %
 % Author(s):    R. Brandalik
 %               D. Henschel

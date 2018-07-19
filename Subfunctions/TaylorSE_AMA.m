@@ -16,7 +16,8 @@ function [x_hat, z_hat, z_hat_full, Out_Optional] = TaylorSE_AMA(z_all_data, z_a
 %       x_hat        - Estimated state vector
 %       z_hat        - Estimated measurement vector
 %       z_hat_full   - Estimation of all important measurements:
-%                      (U, phi, P & Q)
+%                      (U, phi, P & Q) in this order for all node in ID
+%                      order
 %       Out_Optional - Optional output.
 %
 % Author(s):    R. Brandalik
