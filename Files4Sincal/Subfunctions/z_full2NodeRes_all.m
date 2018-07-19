@@ -1,4 +1,4 @@
-function NodeRes_all_estim = z_results2NodeRes_all(z_hat_full, SinInfo)
+function NodeRes_all_estim = z_full2NodeRes_all(z_hat_full, SinInfo)
 %
 %   TODO
 %

@@ -35,7 +35,7 @@ clear NodeRes_all BranchRes_all SimDetails
 
 %% Preparing estimated data in the same form as the input from Sincal
 
-NodeRes_all_estim   = z_results2NodeRes_all(z_hat_full, SinInfo);
+NodeRes_all_estim   = z_full2NodeRes_all(z_hat_full, SinInfo);
 
 BranchRes_all_estim = NodeRes2BranchRes(NodeRes_all_estim, SinInfo,Y_L1L2L3);
 
