@@ -30,7 +30,7 @@ function [x_hat, z_hat, z_hat_full, Out_Optional] = TaylorSE_AMA(z_all_data, z_a
 %
 % Parts of the work were the result of the project CheapFlex, sponsored by
 % the German Federal Ministry of Economic Affairs and Energy as part of the
-% 6th Energy Research Programme of the German Federal Government.
+% 6th Energy Research Programme of the German Federal Government. 
 
 %% Inputs to Settings
 

@@ -11,7 +11,7 @@ function NodeRes_all_estim = z_full2NodeRes_all(z_hat_full, SinInfo)
 %       NodeRes_all_estim - State Estimation results in the same form as
 %                           the Sincal load flow results
 %
-% Author(s): P.Gassler, R. Brandalik
+% Author(s): P.Gassler, R. Brandalik 
 
 %% Initial prepeartion
 

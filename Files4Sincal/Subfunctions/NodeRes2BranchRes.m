@@ -3,7 +3,7 @@ function BranchRes = NodeRes2BranchRes(NodeRes, SinInfo, Y_L1L2L3)
 %matrix in conductor quantity) can be get with the functions GetLineInfo,
 %LineInfo2Y_012 & Y_012_to_Y_L1L2L3
 %
-% Author(s): P.Gassler, R. Brandalik
+% Author(s): P.Gassler, R. Brandalik 
 
 %% Initial preperation
 

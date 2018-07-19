@@ -9,7 +9,7 @@ function [BranchRes_all_estim, BranchRes_all_exakt, NodeRes_all_estim, NodeRes_a
 %       Y_L1L2L3   - admittance matrix in conductor quantity
 %
 %   Output:
-%       Exakt and Estimated Branch and Node results
+%       Exakt and Estimated Branch and Node results 
 
 %% Load exakt values to compare with estimated
 
