@@ -1,11 +1,15 @@
 function [BranchRes_all_estim, BranchRes_all_exakt, NodeRes_all_estim, NodeRes_all_exakt] = get4compare(Input_Prep, z_hat_full, Y_L1L2L3)
 %GET4COMPARE Prepare the estimated data to compare with exakt data (the
 %exakt data is the load flow result used as input data for SE)
+%
 %   Input:
 %       Input_Prep - Information about the load flow data (exakt data)
-%       z_estimate - Result of State Estimation
-%       Y_L1L2L3   - 
-% 
+%       z_hat_full - Result of State Estimation (U, phi, P and Q for all
+%                    Nodes)
+%       Y_L1L2L3   - admittance matrix in conductor quantity
+%
+%   Output:
+%       Exakt and Estimated Branch and Node results
 
 %% Load exakt values to compare with estimated
 
@@ -36,9 +40,4 @@ clear NodeRes_all BranchRes_all SimDetails
 %% Preparing estimated data in the same form as the input from Sincal
 
 NodeRes_all_estim   = z_full2NodeRes_all(z_hat_full, SinInfo);
-
-BranchRes_all_estim = NodeRes2BranchRes(NodeRes_all_estim, SinInfo,Y_L1L2L3);
-
-
-% TO compare, than delete:
-% BranchRes_all_exakt = NodeRes2BranchRes(NodeRes_all_exakt,SimDetails.SinInfo,Y_L1L2L3);
+BranchRes_all_estim = NodeRes2BranchRes(NodeRes_all_estim, SinInfo, Y_L1L2L3);

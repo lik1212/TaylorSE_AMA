@@ -1,7 +1,23 @@
-function [x_hat, z_hat, z_hat_full, Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE)
+function [x_hat, z_hat, z_hat_full, Out_Optional] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE)
 %TAYLORSE_AMA State Estimation with augmented matrix approach and
 %linearized measurement equations (Taylor linearization)
-%   TODO: Detailed explanation
+%   Input
+%       z_all_data - The measurement data
+%       z_all_flag - Basic information about the measurements (what is
+%                    measured, where is it measured ...). 
+%                    See Description_Of_Inputs
+%       LineInfo   - Basic information about the lines (branches) of the
+%                    grid
+%       Inputs_SE  - Optional. For now only the voltage magnitude of the
+%                    evaluation point is given. Can be used in the future 
+%                    for more static parameters.
+%
+%   Output
+%       x_hat        - Estimated state vector
+%       z_hat        - Estimated measurement vector
+%       z_hat_full   - Estimation of all important measurements:
+%                      (U, phi, P & Q)
+%       Out_Optional - Optional output.
 %
 % Author(s):    R. Brandalik
 %               D. Henschel
@@ -87,4 +103,4 @@ end
 
 %% Optional output
 
-Optional.Y_L1L2L3 = Y_L1L2L3; % Needed for comparison of results
+Out_Optional.Y_L1L2L3 = Y_L1L2L3; % Needed for comparison of results

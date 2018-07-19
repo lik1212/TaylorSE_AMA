@@ -58,30 +58,45 @@ for k_Line = 1 : num_Lines % over all lines
     % One diretcion
     BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 1) = repmat(SinInfo.Line.Terminal1_ID(k_Line),num_instants,1); % Terminal1_ID
     BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 2) = repmat(SinInfo.Line.Terminal2_ID(k_Line),num_instants,1); % Terminal2_ID
-    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 3) = abs (I12(                   1 : num_instants    ));        % I1
-    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 4) = abs (I12(    num_instants + 1 : num_instants * 2));        % I2
-    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 5) = abs (I12(2 * num_instants + 1 : num_instants * 3));        % I3
-    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 6) = real(S12(                   1 : num_instants    ));        % P1
-    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 7) = real(S12(    num_instants + 1 : num_instants * 2));        % P2
-    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 8) = real(S12(2 * num_instants + 1 : num_instants * 3));        % P3
-    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 9) = 1 : num_instants;                                         % ResTime
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 3) = real(S12(                   1 : num_instants    ));       % P1
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 4) = imag(S12(                   1 : num_instants    ));       % Q1
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 5) = abs (S12(                   1 : num_instants    ));       % S1    
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 6) = abs (I12(                   1 : num_instants    ));       % I1
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 7) = real(S12(    num_instants + 1 : num_instants * 2));       % P2
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 8) = imag(S12(    num_instants + 1 : num_instants * 2));       % Q2
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 9) = abs (S12(    num_instants + 1 : num_instants * 2));       % S2    
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants,10) = abs (I12(    num_instants + 1 : num_instants * 2));       % I2
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants,11) = real(S12(2 * num_instants + 1 : num_instants * 3));       % P3
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants,12) = imag(S12(2 * num_instants + 1 : num_instants * 3));       % Q3
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants,13) = abs (S12(2 * num_instants + 1 : num_instants * 3));       % S3    
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants,14) = abs (I12(2 * num_instants + 1 : num_instants * 3));       % I3
+    BranchRes_12((k_Line - 1) * num_instants + 1 : k_Line * num_instants,15) = 1 : num_instants;                                         % ResTime
     % Other direction
     BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 1) = repmat(SinInfo.Line.Terminal2_ID(k_Line),num_instants,1); % Terminal1_ID
     BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 2) = repmat(SinInfo.Line.Terminal1_ID(k_Line),num_instants,1); % Terminal2_ID
-    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 3) = abs( I21(                   1 : num_instants    ));        % I1
-    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 4) = abs( I21(    num_instants + 1 : num_instants * 2));        % I2
-    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 5) = abs( I21(2 * num_instants + 1 : num_instants * 3));        % I3
-    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 6) = real(S21(                   1 : num_instants    ));        % P1
-    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 7) = real(S21(    num_instants + 1 : num_instants * 2));        % P2
-    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 8) = real(S21(2 * num_instants + 1 : num_instants * 3));        % P3
-    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 9) = 1 : num_instants;                                         % ResTime
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 3) = real(S21(                   1 : num_instants    ));       % P1
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 4) = imag(S21(                   1 : num_instants    ));       % Q1
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 5) = abs (S21(                   1 : num_instants    ));       % S1
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 6) = abs (I21(                   1 : num_instants    ));       % I1
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 7) = real(S21(    num_instants + 1 : num_instants * 2));       % P2
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 8) = imag(S21(    num_instants + 1 : num_instants * 2));       % Q2
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants, 9) = abs (S21(    num_instants + 1 : num_instants * 2));       % S2
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants,10) = abs (I21(    num_instants + 1 : num_instants * 2));       % I2
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants,11) = real(S21(2 * num_instants + 1 : num_instants * 3));       % P3
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants,12) = imag(S21(2 * num_instants + 1 : num_instants * 3));       % Q3
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants,13) = abs (S21(2 * num_instants + 1 : num_instants * 3));       % S3    
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants,14) = abs (I21(2 * num_instants + 1 : num_instants * 3));       % I3  
+    BranchRes_21((k_Line - 1) * num_instants + 1 : k_Line * num_instants,15) = 1 : num_instants;                                         % ResTime
 end
 
 clear NodeRes
 BranchRes = [BranchRes_12; BranchRes_21];
 clear BranchRes_12 BranchRes21
-BranchRes = array2table(BranchRes, 'VariableNames', ...
-    {'Terminal1_ID','Terminal2_ID','I1','I2','I3',...
-    'P1','P2','P3','ResTime'});
+BranchRes = array2table(BranchRes, 'VariableNames', {'Terminal1_ID','Terminal2_ID',...
+    'P1','Q1','S1','I1', ...
+    'P2','Q2','S2','I2', ...
+    'P3','Q3','S3','I3', ...
+    'ResTime'});
+
 BranchRes = sortrows(BranchRes, 'Terminal1_ID', 'ascend');
 BranchRes = sortrows(BranchRes, 'ResTime',      'ascend');

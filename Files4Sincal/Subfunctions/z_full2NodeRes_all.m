@@ -1,6 +1,15 @@
 function NodeRes_all_estim = z_full2NodeRes_all(z_hat_full, SinInfo)
+%Z_FULL2NODERES_ALL Modify the SE results in z_hat_full to match the
+%NodeRes form (Sincal results)
 %
-%   TODO
+%   Input:
+%       z_hat_full - Result of State Estimation (U, phi, P and Q for all
+%                    Nodes)
+%       SinInfo    - Sincal Grid Information
+%
+%   Output:
+%       NodeRes_all_estim - State Estimation results in the same form as
+%                           the Sincal load flow results
 %
 % Author(s): P.Gassler, R. Brandalik
 
