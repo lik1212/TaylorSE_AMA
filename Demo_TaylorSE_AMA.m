@@ -29,13 +29,13 @@ addpath([pwd,'\Files4Sincal\Subfunctions']);  % Add subfunction path for Sincal
 %  This is not part of the main SE, just the input preperation
 
 Input_Prep                    = struct                                           ;
-Input_Prep.Grid_Name          = 'S_3Nodes'                                       ;
+Input_Prep.Grid_Name          = 'S1a_de'                                         ;
 Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                  ];
 Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'                    ];
 Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw.mat'       ];
 Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw.mat'     ];
 Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details.mat'];
-Input_Prep.with_TR            = false                                            ;
+Input_Prep.with_TR            = true                                             ;
 Input_Prep.pseudo             = false                                            ;  
 
 %% Prepare Measurement Data from Sincal
@@ -65,7 +65,7 @@ toc
 
 %% Compare results with input
 
-% % [BranchRes_all, BranchRes_all_exakt, NodeRes_all, NodeRes_all_exakt] = get4compare(Input_Prep, z_hat_full, Optional.Y_L1L2L3);
+[BranchRes_all_estim, BranchRes_all_exakt, NodeRes_all_estim, NodeRes_all_exakt] = get4compare(Input_Prep, z_hat_full, Optional.Y_L1L2L3);
 % % 
 % % subplot(2,1,1)
 % % plot(NodeRes_all        .U1 - NodeRes_all_exakt.U1)
