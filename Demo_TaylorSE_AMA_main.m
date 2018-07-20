@@ -31,7 +31,7 @@ load([pwd,'\Demo_Data\Demo_Data_v1.mat']);
 
 Inputs_SE.U_eva = 400/sqrt(3); % Voltage of linearization evaluation (eva)
 
-%% Main estimation alfo
+%% Main estimation
 
 tic
 [x_hat, z_hat, z_hat_full] = TaylorSE_AMA(z_all_data, z_all_flag, LineInfo, Inputs_SE);
