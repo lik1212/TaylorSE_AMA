@@ -51,8 +51,8 @@ z_all_data_order = z_all_data(z_order,:);
 Y_L1L2L3               = Y_012_to_Y_L1L2L3(Y_012);              % Admittance matrix in phase sequences
 [H, H_index]           = get_H(Y_L1L2L3, Y_012_Node_ID, U_eva); % All meas. functions for U, phi, P and Q -> Matrix H
 
-HC_flag = NaN(size(z_all_flag_order, 1), 1);                     % Initial matrix of real-pseudo and virtual values
-for k_z = 1 : numel(HC_flag) % Find flag for matrix rows of real-pseudo and virtual values in H
+HC_flag = NaN(size(z_all_flag_order, 1), 1);                    % Initial vector to sort H_index in the same order as z
+for k_z = 1 : numel(HC_flag)                                    % Create vector to sort H_index in the same order as z
     HC_flag(k_z) = find(...
         H_index.Node1_ID  == z_all_flag_order.Node1_ID (k_z) & ...
         H_index.Phase     == z_all_flag_order.Phase    (k_z) & ...
@@ -60,8 +60,8 @@ for k_z = 1 : numel(HC_flag) % Find flag for matrix rows of real-pseudo and virt
 end
 
 HC_switch = find(z_all_flag_order.Accur_Type == 3, 1); % HC_switch defines the position were HC_flag seperates virtual from real-pseudo values
-H_flag = HC_flag(1         : HC_switch - 1, :);        % Position of real-pseudo values in H
-C_flag = HC_flag(HC_switch :           end, :);        % Position of virtual     values in H
+H_flag = HC_flag(1         : HC_switch - 1, :);        % Position of real-pseudo values in H in relation to z
+C_flag = HC_flag(HC_switch :           end, :);        % Position of virtual     values in H in relation to z
 
 H_AM   = H(H_flag,:);                                        % Matrix of real-pseudo values, AM stands for augmented matrix
 C_AM   = H(C_flag,:);                                        % Matrix of virtual     values
