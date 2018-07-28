@@ -92,6 +92,9 @@ SinInfo             = SimDetails.SinInfo;
 clear NodeRes_all BranchRes_all SimDetails
 
 save([Input_Prep.SinInfo_Path,'SinInfo_',Input_Prep.Grid_Name], 'SinInfo')
+save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name]         ,'LineInfo','z_all_data','z_all_flag')
+z_all_data = z_all_data_noisy; clear z_all_data_noisy;
+save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name,'_noisy'],'LineInfo','z_all_data','z_all_flag')
 
 %% Compare results with input
 
