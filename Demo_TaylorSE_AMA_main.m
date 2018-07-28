@@ -25,7 +25,8 @@ addpath([pwd,'\Subfunctions']);  % Add subfunction path
 
 %% Load Demo Data
 
-load([pwd,'\Demo_Data\Demo_Data_v1.mat']); 
+% load([pwd,'\Demo_Data\Demo_Data_S1a.mat']); 
+load([pwd,'\Demo_Data\Demo_Data_S1a_noisy.mat']);
 
 %% Inputs for State Estimation (can be extended with Inputs)
 
