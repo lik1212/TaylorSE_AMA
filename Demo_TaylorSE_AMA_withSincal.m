@@ -35,16 +35,25 @@ Input_Prep                    = struct                                          
 Input_Prep.Grid_Name          = 'S1a_de'                                         ;
 Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                  ];
 Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'                    ];
+Input_Prep.SinInfo_Path       = [pwd, '\Files4Sincal\SinInfos\'                 ];
 Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw.mat'       ];
 Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw.mat'     ];
 Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details.mat'];
 Input_Prep.with_TR            = true                                             ;
 Input_Prep.pseudo             = false                                            ;  
-
-%% Prepare Measurement Data from Sincal
-
 % Remove trafo if in Results
-if Input_Prep.with_TR; removeTR(Input_Prep); end
+if Input_Prep.with_TR
+    % Check if files without TR already exist
+    if ~isfile([Input_Prep.LF_Res_Path, Input_Prep.Simulation_Details(1 : end - 4) ,'_wo_TR.mat'])
+        removeTR(Input_Prep);  % If not, create them
+    end
+    Input_Prep.Simulation_Details = [Input_Prep.Simulation_Details(1 : end - 4) ,'_wo_TR.mat'];   
+    Input_Prep.NodeRes_Name       = [Input_Prep.      NodeRes_Name(1 : end - 4) ,'_wo_TR.mat'];
+    Input_Prep.BranchRes_Name     = [Input_Prep.    BranchRes_Name(1 : end - 4) ,'_wo_TR.mat'];
+end
+
+%% Prepare z vector
+
 LineInfo  = GetLineInfo      (Input_Prep);
 MeasurPos = GetMeasurPosition(Input_Prep);
 
@@ -60,19 +69,42 @@ z_all_data_noisy = z_all_data + normrnd(0, 1, size(z_all_data)) .* z_all_flag.Si
 
 Inputs_SE.U_eva = 400/sqrt(3); % Voltage of linearization evaluation (eva)
 
-%% Main estimation alfo
+%% Main estimation
 
 tic
 [x_hat, z_hat, z_hat_full, Out_Optional] = TaylorSE_AMA(z_all_data_noisy, z_all_flag, LineInfo, Inputs_SE);
 toc
 
+%% Prepare Measurement Data from Sincal for comparison
+
+load([Input_Prep.LF_Res_Path, Input_Prep.Simulation_Details ] , 'SimDetails'   );
+load([Input_Prep.LF_Res_Path, Input_Prep.NodeRes_Name       ] , 'NodeRes_all'  );
+load([Input_Prep.LF_Res_Path, Input_Prep.BranchRes_Name     ] , 'BranchRes_all');
+
+% Maybe this sorting is not nessecary, but just in case:
+NodeRes_all = sortrows(NodeRes_all,'Node_ID','ascend');
+NodeRes_all = sortrows(NodeRes_all,'ResTime','ascend');
+
+NodeRes_all_exakt   = NodeRes_all       ;
+BranchRes_all_exakt = BranchRes_all     ;
+SinInfo             = SimDetails.SinInfo;
+
+clear NodeRes_all BranchRes_all SimDetails
+
+save([Input_Prep.SinInfo_Path,'SinInfo_',Input_Prep.Grid_Name], 'SinInfo')
+
 %% Compare results with input
 
-[BranchRes_all_estim, BranchRes_all_exakt, NodeRes_all_estim, NodeRes_all_exakt] = get4compare(Input_Prep, z_hat_full, Out_Optional.Y_L1L2L3);
+NodeRes_all_estim   = z_full2NodeRes_all(z_hat_full, SinInfo);
+BranchRes_all_estim = NodeRes2BranchRes(NodeRes_all_estim, SinInfo, Out_Optional.Y_L1L2L3);
 
-subplot(2,1,1)
+subplot(2,1,1); hold all
 plot((NodeRes_all_estim  .U1 - NodeRes_all_exakt  .U1) * 10^3);
+plot((NodeRes_all_estim  .U2 - NodeRes_all_exakt  .U2) * 10^3);
+plot((NodeRes_all_estim  .U3 - NodeRes_all_exakt  .U3) * 10^3);
 ylabel('Error in V');
-subplot(2,1,2)
-plot((BranchRes_all_exakt.I1 - BranchRes_all_estim.I1) * 10^3);
+subplot(2,1,2); hold all
+plot((BranchRes_all_estim.I1 - BranchRes_all_exakt.I1) * 10^3);
+plot((BranchRes_all_estim.I2 - BranchRes_all_exakt.I2) * 10^3);
+plot((BranchRes_all_estim.I3 - BranchRes_all_exakt.I3) * 10^3);
 ylabel('Error in A');

@@ -8,13 +8,9 @@ function MeasurPos = GetMeasurPosition(Inputs)
 
 %% Load SinInfo of the Sincal Model
 
-if Inputs.with_TR == false
-        SimDetails         = [Inputs.LF_Res_Path, Inputs.Simulation_Details                             ];
-else;   SimDetails         = [Inputs.LF_Res_Path, Inputs.Simulation_Details(1 : end - 4)   ,'_wo_TR.mat'];
-end
-load(SimDetails ,'SimDetails')
+SimDetails = load([Inputs.LF_Res_Path, Inputs.Simulation_Details] ,'SimDetails');
 
-SinInfo = SimDetails.SinInfo;
+SinInfo = SimDetails.SimDetails.SinInfo;
     
 %% Initial matrix of measurements
 

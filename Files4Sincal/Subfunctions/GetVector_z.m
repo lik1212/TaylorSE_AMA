@@ -4,17 +4,8 @@ function [z_all_data, z_all_flag] = GetVector_z(Inputs, MeasurPos)
 
 %% Load Sincal Results
 
-if Inputs.with_TR == false
-    NodeRes_PathName   = [Inputs.LF_Res_Path, Inputs.  NodeRes_Name];
-    BranchRes_PathName = [Inputs.LF_Res_Path, Inputs.BranchRes_Name];
-else
-    NodeRes_PathName   = [Inputs.LF_Res_Path, Inputs.  NodeRes_Name(1 : end - 4), '_wo_TR.mat'];
-    BranchRes_PathName = [Inputs.LF_Res_Path, Inputs.BranchRes_Name(1 : end - 4), '_wo_TR.mat'];
-end
-
-% if Inputs.with_TR == false
-load(NodeRes_PathName  , 'NodeRes_all'  );
-load(BranchRes_PathName, 'BranchRes_all'); % TODO: Yet only NodeResult used
+load([Inputs.LF_Res_Path, Inputs.  NodeRes_Name]  , 'NodeRes_all');
+load([Inputs.LF_Res_Path, Inputs.BranchRes_Name], 'BranchRes_all'); % TODO: Yet only NodeResult used
 
 %% Number of measurements & time instances 
 
