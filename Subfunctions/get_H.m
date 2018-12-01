@@ -19,8 +19,8 @@ B_ij    = imag(Y_L1L2L3);	% Get imaginary part (susceptance) of admmittance matr
 %       where i,j are grid node names and v,w are conductor names
 
 delta1_eva  =    0     ;
-delta2_eva  =  2/3 * pi;
-delta3_eva  = -2/3 * pi;
+delta2_eva  = -2/3 * pi;
+delta3_eva  =  2/3 * pi;
 
 H_index = table;
 H_index.Node1_ID  = repmat(Y_012_Node_ID,4,1);
@@ -34,20 +34,51 @@ H = zeros(4*size_Y,2*size_Y);   % H includes all possible measurement model equa
 H(1:2*size_Y,1:2*size_Y) = eye(2*size_Y);
 
 %%  Set measurement modell equations for active and reactive power
-for k_P = 1:size_Y
-    for k_Pos = 1:size_Y
-        case_phase = mod(k_P,3) - mod(k_Pos,3);
+for k_i = 1:size_Y
+    for k_j = 1:size_Y
+        case_phase = mod(k_i - k_j, 3);
         switch case_phase
-            case 0      % case L1-L1 L2-L2 L3-L3
+            case 0 % case L1-L1 L2-L2 L3-L3
                 delta_eva = delta1_eva;
-            case {-1,2} % case L1-L2 L2-L3 L3-L1
+            case 1 % case L2-L1 L3-L2 L1-L3
                 delta_eva = delta2_eva;
-            case {-2,1} % case L2-L1 L3-L2 L1-L3
+            case 2 % case L1-L2 L2-L3 L3-L1
                 delta_eva = delta3_eva;
         end
-        H(2*size_Y+k_P,k_Pos)         = U_eva   * ( cos(delta_eva) * G_ij(k_P,k_Pos) + sin(delta_eva) * B_ij(k_P,k_Pos));
-        H(2*size_Y+k_P,size_Y+k_Pos)  = U_eva^2 * ( sin(delta_eva) * G_ij(k_P,k_Pos) - cos(delta_eva) * B_ij(k_P,k_Pos));
-        H(3*size_Y+k_P,k_Pos)         = U_eva   * ( sin(delta_eva) * G_ij(k_P,k_Pos) - cos(delta_eva) * B_ij(k_P,k_Pos));
-        H(3*size_Y+k_P,size_Y+k_Pos)  = U_eva^2 * (-cos(delta_eva) * G_ij(k_P,k_Pos) - sin(delta_eva) * B_ij(k_P,k_Pos));
+        H(2 * size_Y + k_i, k_j         ) = U_eva   * ( cos(delta_eva) * G_ij(k_i,k_j) + sin(delta_eva) * B_ij(k_i,k_j)); % P/U
+        H(2 * size_Y + k_i, size_Y + k_j) = U_eva^2 * ( sin(delta_eva) * G_ij(k_i,k_j) - cos(delta_eva) * B_ij(k_i,k_j)); % P/phi
+        H(3 * size_Y + k_i, k_j         ) = U_eva   * ( sin(delta_eva) * G_ij(k_i,k_j) - cos(delta_eva) * B_ij(k_i,k_j)); % Q/U
+        H(3 * size_Y + k_i, size_Y + k_j) = U_eva^2 * (-cos(delta_eva) * G_ij(k_i,k_j) - sin(delta_eva) * B_ij(k_i,k_j)); % Q/phi
     end
 end
+
+%%  Set measurement modell equations for active and reactive power (to compare)
+
+% for k_i = 1:size_Y
+%     for k_j = 1:size_Y
+%         case_phase = mod(k_i,3) - mod(k_j,3);
+%         switch case_phase
+%             case 0      % case L1-L1 L2-L2 L3-L3
+%                 delta_eva = delta1_eva;
+%             case {-1,2} % case L1-L2 L2-L3 L3-L1
+%                 delta_eva = delta2_eva;
+%             case {-2,1} % case L2-L1 L3-L2 L1-L3
+%                 delta_eva = delta3_eva;
+%         end
+%         if k_i ~= k_j
+%             H(2 * size_Y + k_i,          k_j) = U_eva   * ( cos(delta_eva) * G_ij(k_i,k_j) + sin(delta_eva) * B_ij(k_i,k_j)); % P_i/  U_j
+%             H(2 * size_Y + k_i, size_Y + k_j) = U_eva^2 * ( sin(delta_eva) * G_ij(k_i,k_j) - cos(delta_eva) * B_ij(k_i,k_j)); % P_i/phi_j
+%             H(3 * size_Y + k_i,          k_j) = U_eva   * ( sin(delta_eva) * G_ij(k_i,k_j) - cos(delta_eva) * B_ij(k_i,k_j)); % Q_i/  U_j
+%             H(3 * size_Y + k_i, size_Y + k_j) = U_eva^2 * (-cos(delta_eva) * G_ij(k_i,k_j) - sin(delta_eva) * B_ij(k_i,k_j)); % Q_i/phi_j
+%         else
+%             H(2 * size_Y + k_i,          k_i) = H(2 * size_Y + k_i,          k_i) + U_eva   * ( cos(delta_eva) * G_ij(k_i,k_j) + sin(delta_eva) * B_ij(k_i,k_j)); % P_i/  U_i
+%             H(2 * size_Y + k_i, size_Y + k_i) = H(2 * size_Y + k_i, size_Y + k_i) - U_eva^2 * (-sin(delta_eva) * G_ij(k_i,k_j) + cos(delta_eva) * B_ij(k_i,k_j)); % P_i/phi_i
+%             H(3 * size_Y + k_i,          k_i) = H(3 * size_Y + k_i,          k_i) + U_eva   * ( sin(delta_eva) * G_ij(k_i,k_j) - cos(delta_eva) * B_ij(k_i,k_j)); % Q_i/  U_i
+%             H(3 * size_Y + k_i, size_Y + k_i) = H(3 * size_Y + k_i, size_Y + k_i) - U_eva^2 * ( cos(delta_eva) * G_ij(k_i,k_j) + sin(delta_eva) * B_ij(k_i,k_j)); % Q_i/phi_i            
+%         end
+%         H(2 * size_Y + k_i,          k_i) = H(2 * size_Y + k_i,          k_i) + U_eva   * ( cos(delta_eva) * G_ij(k_i,k_j) + sin(delta_eva) * B_ij(k_i,k_j)); % P_i/  U_i
+%         H(2 * size_Y + k_i, size_Y + k_i) = H(2 * size_Y + k_i, size_Y + k_i) + U_eva^2 * (-sin(delta_eva) * G_ij(k_i,k_j) + cos(delta_eva) * B_ij(k_i,k_j)); % P_i/phi_i
+%         H(3 * size_Y + k_i,          k_i) = H(3 * size_Y + k_i,          k_i) + U_eva   * ( sin(delta_eva) * G_ij(k_i,k_j) - cos(delta_eva) * B_ij(k_i,k_j)); % Q_i/  U_i  
+%         H(3 * size_Y + k_i, size_Y + k_i) = H(3 * size_Y + k_i, size_Y + k_i) + U_eva^2 * ( cos(delta_eva) * G_ij(k_i,k_j) + sin(delta_eva) * B_ij(k_i,k_j)); % Q_i/phi_i
+%     end
+% end
