@@ -31,16 +31,17 @@ addpath([pwd,'\Files4Sincal\Subfunctions']);  % Add subfunction path for Sincal
 %% Prepare Sincal Results as input for the TaylorSE_AMA
 %  This is not part of the main SE, just the input preperation
 
-Input_Prep                    = struct                                           ;
-Input_Prep.Grid_Name          = 'S1a_de'                                         ;
-Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                  ];
-Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'                    ];
-Input_Prep.SinInfo_Path       = [pwd, '\Files4Sincal\SinInfos\'                 ];
-Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw.mat'       ];
-Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw.mat'     ];
-Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details.mat'];
-Input_Prep.with_TR            = true                                             ;
-Input_Prep.pseudo             = false                                            ;  
+Input_Prep                    = struct                                                                   ;
+Input_Prep.Grid_Name          = 'S1a_de'                                                                 ;
+Input_Prep.ResDate            = ''                                                                       ;
+Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                                          ];
+Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'                                            ];
+Input_Prep.SinInfo_Path       = [pwd, '\Files4Sincal\SinInfos\'                                         ];
+Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw',        Input_Prep.ResDate, '.mat'];
+Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw',      Input_Prep.ResDate, '.mat'];
+Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details', Input_Prep.ResDate, '.mat'];
+Input_Prep.with_TR            = true                                                                     ;
+Input_Prep.pseudo             = false                                                                    ;
 % Remove trafo if in Results
 if Input_Prep.with_TR
     % Check if files without TR already exist
@@ -92,9 +93,9 @@ SinInfo             = SimDetails.SinInfo;
 clear NodeRes_all BranchRes_all SimDetails
 
 save([Input_Prep.SinInfo_Path,'SinInfo_',Input_Prep.Grid_Name], 'SinInfo')
-save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name]         ,'LineInfo','z_all_data','z_all_flag')
+save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate,          '.mat'], 'LineInfo','z_all_data','z_all_flag')
 z_all_data = z_all_data_noisy; clear z_all_data_noisy;
-save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name,'_noisy'],'LineInfo','z_all_data','z_all_flag')
+save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate, '_noisy','.mat'], 'LineInfo','z_all_data','z_all_flag')
 
 %% Compare results with input
 
