@@ -42,6 +42,7 @@ Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw',      In
 Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details', Input_Prep.ResDate, '.mat'];
 Input_Prep.with_TR            = true                                                                     ;
 Input_Prep.pseudo             = false                                                                    ;
+Input_Prep.copyFiles          = false                                                                    ; % only for local
 % Remove trafo if in Results
 if Input_Prep.with_TR
     % Check if files without TR already exist
@@ -94,7 +95,8 @@ clear NodeRes_all BranchRes_all SimDetails
 
 save([Input_Prep.SinInfo_Path,'SinInfo_',Input_Prep.Grid_Name], 'SinInfo')
 save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate,          '.mat'], 'LineInfo','z_all_data','z_all_flag')
-z_all_data = z_all_data_noisy; clear z_all_data_noisy;
+z_all_data_save = z_all_data;
+z_all_data      = z_all_data_noisy;
 save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate, '_noisy','.mat'], 'LineInfo','z_all_data','z_all_flag')
 
 %% Compare results with input
@@ -112,3 +114,18 @@ plot((BranchRes_all_estim.I1 - BranchRes_all_exakt.I1) * 10^3);
 plot((BranchRes_all_estim.I2 - BranchRes_all_exakt.I2) * 10^3);
 plot((BranchRes_all_estim.I3 - BranchRes_all_exakt.I3) * 10^3);
 ylabel('Error in A');
+
+%% Copy files to other algoritmes (only for local)
+
+if Input_Prep.copyFiles == true 
+    path_split    = strsplit(pwd,'\');
+    NodeRes_all   = NodeRes_all_exakt  ;
+    BranchRes_all = BranchRes_all_exakt;
+    clear NodeRes_all_exakt BranchRes_all_exakt
+    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Comparison_Data\',Input_Prep.  NodeRes_Name], 'NodeRes_all'  );
+    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Comparison_Data\',Input_Prep.BranchRes_Name], 'BranchRes_all');
+    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Comparison_Data\','SinInfo_',Input_Prep.Grid_Name], 'SinInfo');
+    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate, '_noisy','.mat'], 'LineInfo','z_all_data','z_all_flag')
+    z_all_data = z_all_data_save;
+    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate,          '.mat'], 'LineInfo','z_all_data','z_all_flag')
+end
