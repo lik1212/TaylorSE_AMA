@@ -43,7 +43,12 @@ MeasurPos.Node2_ID (num_Node + 1 : num_all) = [...
 
 Node_ID_all      = SinInfo.Node.Node_ID;
 Node_ID_Infeeder = unique(SinInfo.Infeeder.  Node1_ID);
-Node_ID_PV       = unique(SinInfo.DCInfeeder.Node1_ID);
+% Sometimes they are no DCInfeeder
+if any(ismember(fields(SinInfo),'DCInfeeder'))
+    Node_ID_PV       = unique(SinInfo.DCInfeeder.Node1_ID);
+else
+    Node_ID_PV = [];
+end
 Node_ID_Load     = unique(SinInfo.Load.      Node1_ID);
 Node_ID_Joint    = setdiff(Node_ID_all, ...
     [Node_ID_Infeeder; Node_ID_PV; Node_ID_Load]);  % TODO after function revision. Depents on the Input.pseudo flag
