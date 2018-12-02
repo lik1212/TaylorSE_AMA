@@ -8,8 +8,8 @@ function [Y_012, Y_012_Node_ID] = LineInfo2Y_012(LineInfo)
 
 LineInfo.Y_series_1 = ((LineInfo.r                   + 1i * LineInfo.x                   ).* LineInfo.l).^ -1;
 LineInfo.Y_series_0 = ((LineInfo.r .* LineInfo.r0_r1 + 1i * LineInfo.x .* LineInfo.x0_x1 ).* LineInfo.l).^ -1;
-LineInfo.Y_shunt_1  = LineInfo.c  * 0.5 * 2 * pi * 50 .* LineInfo.l;
-LineInfo.Y_shunt_0  = LineInfo.c0 * 0.5 * 2 * pi * 50 .* LineInfo.l;
+LineInfo.Y_shunt_1  = LineInfo.c  * 10^-9 * 0.5 * 2 * pi * 50 .* LineInfo.l; % Sincal default in nF
+LineInfo.Y_shunt_0  = LineInfo.c0 * 10^-9 * 0.5 * 2 * pi * 50 .* LineInfo.l; % Sincal default in nF
 
 %% Start creating the admittance matrix in symmetrical component
 
@@ -24,12 +24,12 @@ for k_Li = 1 : size(LineInfo, 1) % over all Lines
         N2_pos = Node_IDs == LineInfo.Node2_ID(k_Li); % Node 2 position in matrix
         Y_0(N1_pos, N1_pos) = + LineInfo.Y_series_0(k_Li) + Y_0(N1_pos, N1_pos); % zero component, diagonal
         Y_0(N2_pos, N2_pos) = + LineInfo.Y_series_0(k_Li) + Y_0(N2_pos, N2_pos); % zero component, diagonal
-        Y_0(N1_pos, N2_pos) = - LineInfo.Y_series_0(k_Li)                      ; % zero component, non-diagonal
-        Y_0(N2_pos, N1_pos) = - LineInfo.Y_series_0(k_Li)                      ; % zero component, non-diagonal
+        Y_0(N1_pos, N2_pos) = - LineInfo.Y_series_0(k_Li) + Y_0(N1_pos, N2_pos); % zero component, non-diagonal
+        Y_0(N2_pos, N1_pos) = - LineInfo.Y_series_0(k_Li) + Y_0(N2_pos, N1_pos); % zero component, non-diagonal
         Y_1(N1_pos, N1_pos) = + LineInfo.Y_series_1(k_Li) + Y_1(N1_pos, N1_pos); % direct component, diagonal
         Y_1(N2_pos, N2_pos) = + LineInfo.Y_series_1(k_Li) + Y_1(N2_pos, N2_pos); % direct component, diagonal       
-        Y_1(N1_pos, N2_pos) = - LineInfo.Y_series_1(k_Li)                      ; % direct component, non-diagonal
-        Y_1(N2_pos, N1_pos) = - LineInfo.Y_series_1(k_Li)                      ; % direct component, non-diagonal
+        Y_1(N1_pos, N2_pos) = - LineInfo.Y_series_1(k_Li) + Y_1(N1_pos, N2_pos); % direct component, non-diagonal
+        Y_1(N2_pos, N1_pos) = - LineInfo.Y_series_1(k_Li) + Y_1(N2_pos, N1_pos); % direct component, non-diagonal
     end
     if LineInfo{k_Li, {'Flag_State1'}} % Shunt elements
         Y_0(N1_pos, N1_pos) = + LineInfo.Y_shunt_0 (k_Li) + Y_0(N1_pos, N1_pos);
