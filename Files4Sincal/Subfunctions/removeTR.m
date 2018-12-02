@@ -20,7 +20,7 @@ if isfield(SinInfo, 'TwoWindingTransformer') % If TR occur
     load(NodeRes_PathName  ,'NodeRes_all'  );
     load(BranchRes_PathName,'BranchRes_all'); 
     % Remove initial infeeder from Node Results
-    NodeRes_all(NodeRes_all.Node_ID == SinInfo.Infeeder.Node1_ID, :) = []; %#ok, will be saved
+    NodeRes_all(NodeRes_all.Node_ID == SinInfo.Infeeder.Node1_ID, :) = [];
     % Save Node IDs of initial and new infeeder & TR
     Node_ID_Infeeder_old = SinInfo.Infeeder             {:, {'Node1_ID'            }};
     Node_IDs_TR          = SinInfo.TwoWindingTransformer{:, {'Node1_ID', 'Node2_ID'}};
@@ -30,12 +30,12 @@ if isfield(SinInfo, 'TwoWindingTransformer') % If TR occur
     % Over all variables
     for k_Var = 1 : numel(VarNames) % Set BranchRes of TR to NodeRes of Infeeder, Node IDs of TR are reversed (Node2 -> Node1)
         NodeRes_all.(VarNames{k_Var})(NodeRes_all.Node_ID == Node_ID_Infeeder_new) = ...
-            BranchRes_all.(VarNames{k_Var})(ismember(BranchRes_all{:, {'Node2_ID', 'Node1_ID'}}, Node_IDs_TR, 'rows')); %#ok, will be saved
+            BranchRes_all.(VarNames{k_Var})(ismember(BranchRes_all{:, {'Node2_ID', 'Node1_ID'}}, Node_IDs_TR, 'rows'));
     end
     NodeRes_all.S(NodeRes_all.Node_ID == Node_ID_Infeeder_new) = NaN; % S do not occur in BranchRes so set it to NaN
     % Remove BranchRes of TR
     BranchRes_all(ismember(BranchRes_all{:, {'Node1_ID', 'Node2_ID'}}, Node_IDs_TR, 'rows'),:) = [];
-    BranchRes_all(ismember(BranchRes_all{:, {'Node2_ID', 'Node1_ID'}}, Node_IDs_TR, 'rows'),:) = []; %#ok, will be saved   
+    BranchRes_all(ismember(BranchRes_all{:, {'Node2_ID', 'Node1_ID'}}, Node_IDs_TR, 'rows'),:) = [];
     % In the next section adjust SinInfo to be correct again
     Element_ID_TR       = SinInfo.TwoWindingTransformer.Element_ID;
     Element_ID_Infeeder = SinInfo.Infeeder.Element_ID;    
