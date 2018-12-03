@@ -37,12 +37,13 @@ Input_Prep.ResDate            = ''                                              
 Input_Prep.LF_Res_Path        = [pwd, '\Files4Sincal\Results\'                                          ];
 Input_Prep.Grid_Path          = [pwd, '\Files4Sincal\Grids\'                                            ];
 Input_Prep.SinInfo_Path       = [pwd, '\Files4Sincal\SinInfos\'                                         ];
+Input_Prep.SE_Inputs_Path     = [pwd,'\Demo_Data\'                                         ];
 Input_Prep.NodeRes_Name       = [Input_Prep.Grid_Name, '_NodeRes_raw',        Input_Prep.ResDate, '.mat'];
 Input_Prep.BranchRes_Name     = [Input_Prep.Grid_Name, '_BranchRes_raw',      Input_Prep.ResDate, '.mat'];
 Input_Prep.Simulation_Details = [Input_Prep.Grid_Name, '_Simulation_Details', Input_Prep.ResDate, '.mat'];
 Input_Prep.with_TR            = true                                                                     ;
 Input_Prep.pseudo             = false                                                                    ;
-Input_Prep.copyFiles          = false                                                                    ; % only for local
+
 % Remove trafo if in Results
 if Input_Prep.with_TR
     % Check if files without TR already exist
@@ -69,7 +70,7 @@ z_all_data_noisy = z_all_data + normrnd(0, 1, size(z_all_data)) .* z_all_flag.Si
 
 %% Inputs for State Estimation (can be extended with Inputs)
 
-Inputs_SE.U_eva = 400/sqrt(3); % Voltage of linearization evaluation (eva)
+Inputs_SE.U_eva = 1.00 * 400/sqrt(3); % Voltage of linearization evaluation (eva)
 
 %% Main estimation
 
@@ -94,10 +95,10 @@ SinInfo             = SimDetails.SinInfo;
 clear NodeRes_all BranchRes_all SimDetails
 
 save([Input_Prep.SinInfo_Path,'SinInfo_',Input_Prep.Grid_Name], 'SinInfo')
-save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate,          '.mat'], 'LineInfo','z_all_data','z_all_flag')
+save([Input_Prep.SE_Inputs_Path, 'Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate,          '.mat'], 'LineInfo','z_all_data','z_all_flag')
 z_all_data_save = z_all_data;
 z_all_data      = z_all_data_noisy;
-save([pwd,'\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate, '_noisy','.mat'], 'LineInfo','z_all_data','z_all_flag')
+save([Input_Prep.SE_Inputs_Path, 'Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate, '_noisy','.mat'], 'LineInfo','z_all_data','z_all_flag')
 
 %% Compare results with input
 
@@ -114,18 +115,3 @@ plot((BranchRes_all_estim.I1 - BranchRes_all_exakt.I1) * 10^3);
 plot((BranchRes_all_estim.I2 - BranchRes_all_exakt.I2) * 10^3);
 plot((BranchRes_all_estim.I3 - BranchRes_all_exakt.I3) * 10^3);
 ylabel('Error in A');
-
-%% Copy files to other algoritmes (only for local)
-
-if Input_Prep.copyFiles == true 
-    path_split    = strsplit(pwd,'\');
-    NodeRes_all   = NodeRes_all_exakt  ;
-    BranchRes_all = BranchRes_all_exakt;
-    clear NodeRes_all_exakt BranchRes_all_exakt
-    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Comparison_Data\',Input_Prep.  NodeRes_Name], 'NodeRes_all'  );
-    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Comparison_Data\',Input_Prep.BranchRes_Name], 'BranchRes_all');
-    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Comparison_Data\','SinInfo_',Input_Prep.Grid_Name], 'SinInfo');
-    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate, '_noisy','.mat'], 'LineInfo','z_all_data','z_all_flag')
-    z_all_data = z_all_data_save;
-    save([strjoin(path_split(1:end - 1),'\'),'\GenSE_AMA\Demo_Data\Demo_Data_', Input_Prep.Grid_Name, Input_Prep.ResDate,          '.mat'], 'LineInfo','z_all_data','z_all_flag')
-end
